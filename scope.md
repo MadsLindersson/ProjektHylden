@@ -8,7 +8,7 @@ An applikation where people can upload and share their creativity with eachother
 
 ### Front Page
 
-On the front page, random posts from all users will be seen in no paticular order as the first thing seen. A user can then sort by catagories. A user can then either click on a post that will open that post, here you can like and comment on the post, and go to profiles from there or click on a fan that shows all the accounts on the site.
+On the front page, random posts from all users will be seen in no paticular order as the first thing seen. A user can then sort by catagories. A user can then either click on a post that will open that post, here you can like and comment on the post, and go to profiles from there or click on a fan that shows all the accounts on the site. A user will be able to seach for a specific user or post.
 
 There will be a sign in button for the users that have account and a sign up button for anyone who wants to have an account.
 
@@ -39,6 +39,7 @@ An admin also has en extra fan where they can administrate users of the page. Th
   - Display random posts from all users
   - Sort posts by categories
   - Click post to open full post view
+  - search bar
 
 - Post interactions
   - Like post
