@@ -57,3 +57,17 @@ An admin also has en extra fan where they can administrate users of the page. Th
   - Edit user accounts
   - Delete user accounts
   - Change user roles
+
+
+## Technologies
+
+- DB
+  - SQLite
+  - Filserver?
+- Server
+  - Node.js
+- Webapp
+  - Svelte
+- Toastr
+- Bcrypt
+- 

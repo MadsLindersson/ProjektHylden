@@ -1,0 +1,58 @@
+erdiagram ProjektHylden
+
+notation=default
+
+entity User {
+    id key           // INTEGER PRIMARY KEY
+    username         // TEXT
+    email            // TEXT
+    password         // TEXT
+    profile_pic       // TEXT
+    bio              // TEXT
+    role             // TEXT
+}
+
+entity Post {
+    id key           // INTEGER PRIMARY KEY
+    userId           // INTEGER (FK -> User.id)
+    title            // TEXT
+    description      // TEXT
+    category         // TEXT
+    createdAt        // TEXT
+    updatedAt        // TEXT
+}
+
+entity PostImage {
+    id key           // INTEGER PRIMARY KEY
+    postId           // INTEGER (FK -> Post.id)
+    imageUrl         // TEXT
+}
+
+entity Comment {
+    id key           // INTEGER PRIMARY KEY
+    postId           // INTEGER (FK -> Post.id)
+    text             // TEXT
+    createdAt        // TEXT
+}
+
+entity Like {
+    id key           // INTEGER PRIMARY KEY
+    postId           // INTEGER (FK -> Post.id)
+    createdAt        // TEXT
+}
+
+relationship UserPosts {
+    User -> Post
+}
+
+relationship PostComments {
+    Post -> Comment
+}
+
+relationship PostLikes {
+    Post -> Like
+}
+
+relationship PostImages {
+    Post -> PostImage
+}
