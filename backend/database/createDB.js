@@ -1,18 +1,18 @@
 import db from './connection.js';
 
 db.exec(`
-    CREATE TABLE User (
+    CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL,
-    email TEXT NOT NULL,
+    username TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE, 
     password TEXT NOT NULL,
     profile_pic TEXT,
     bio TEXT,
     role TEXT NOT NULL DEFAULT 'user',
-    createdAt TEXT NOT NULL
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE Post (
+CREATE TABLE posts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     userId INTEGER NOT NULL,
     title TEXT NOT NULL,
@@ -20,34 +20,40 @@ CREATE TABLE Post (
     category TEXT,
     createdAt TEXT NOT NULL,
     updatedAt TEXT,
-    FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
+    -- Rettet: Refererer nu til 'users'
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE PostImage (
+CREATE TABLE post_images (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     postId INTEGER NOT NULL,
     imageUrl TEXT NOT NULL,
     orderIndex INTEGER DEFAULT 0,
-    FOREIGN KEY (postId) REFERENCES Post(id) ON DELETE CASCADE
+    -- Rettet: Refererer nu til 'posts'
+    FOREIGN KEY (postId) REFERENCES posts(id) ON DELETE CASCADE
 );
 
-CREATE TABLE Comment (
+CREATE TABLE comments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     postId INTEGER NOT NULL,
     userId INTEGER NOT NULL,
     text TEXT NOT NULL,
     createdAt TEXT NOT NULL,
-    FOREIGN KEY (postId) REFERENCES Post(id) ON DELETE CASCADE,
-    FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
+    -- Rettet: Refererer nu til 'posts'
+    FOREIGN KEY (postId) REFERENCES posts(id) ON DELETE CASCADE,
+    -- Rettet: Refererer nu til 'users'
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE Like (
+CREATE TABLE likes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     postId INTEGER NOT NULL,
     userId INTEGER NOT NULL,
     createdAt TEXT NOT NULL,
-    FOREIGN KEY (postId) REFERENCES Post(id) ON DELETE CASCADE,
-    FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
+    -- Rettet: Refererer nu til 'posts'
+    FOREIGN KEY (postId) REFERENCES posts(id) ON DELETE CASCADE,
+    -- Rettet: Refererer nu til 'users'
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
 );
     
 `);

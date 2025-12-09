@@ -1,5 +1,46 @@
 <script>
-    import { Link } from 'svelte-routing';
+    import { Link, navigate } from 'svelte-routing';
+    import { accountCreated, pwNotAMatch, somethingWentWrong, emailOrUsernameExists } from '../../utilFrontend/toastr.js';
+
+    let username = "";
+    let email = "";
+    let password = "";
+    let confirmPassword = "";
+
+    async function handleSubmit ()  {
+        if (password !== confirmPassword)   {
+            pwNotAMatch();
+            return;
+        };
+
+        const user = {
+            username: username,
+            email: email,
+            password: password
+        };
+
+        try {
+            const response = await fetch ("http://localhost:8080/signUp", {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            });
+
+            if (response.ok)   {
+                accountCreated(true);
+                navigate("/SignIn")
+            } else  {
+                emailOrUsernameExists();
+            };
+
+        } catch (error)  {
+            console.log("Something went wrong:", error);
+            somethingWentWrong();
+        }
+    }
 </script>
 
 <div class="flex h-screen items-center justify-center">
@@ -38,24 +79,16 @@
                 </p>
             </div>
 
-            <form class="space-y-6">
-                
-                <div class="space-y-1">
-                    <label for="display-name" class="text-sm font-medium">Display Name</label>
-                    <input 
-                        type="text" 
-                        id="display-name" 
-                        placeholder="Your name"
-                        class="w-full px-4 py-3 rounded-lg bg-[#1C1715] border border-transparent focus:border-orange-500 focus:ring-0 text-white placeholder-gray-500"
-                    />
-                </div>
+            <form on:submit|preventDefault={handleSubmit} class="space-y-6">
 
                 <div class="space-y-1">
                     <label for="username" class="text-sm font-medium">Username</label>
                     <input 
+                        bind:value={username}
                         type="text" 
                         id="username" 
                         placeholder="your_username"
+                        required
                         class="w-full px-4 py-3 rounded-lg bg-[#1C1715] border border-transparent focus:border-orange-500 focus:ring-0 text-white placeholder-gray-500"
                     />
                 </div>
@@ -63,9 +96,11 @@
                 <div class="space-y-1">
                     <label for="email" class="text-sm font-medium">Email</label>
                     <input 
+                        bind:value={email}
                         type="email" 
                         id="email" 
                         placeholder="you@example.com"
+                        required
                         class="w-full px-4 py-3 rounded-lg bg-[#1C1715] border border-transparent focus:border-orange-500 focus:ring-0 text-white placeholder-gray-500"
                     />
                 </div>
@@ -74,11 +109,27 @@
                     <label for="password" class="text-sm font-medium">Password</label>
                     <div class="relative">
                         <input 
-                        type="password" 
-                        id="password" 
-                        placeholder="********" 
-                        class="w-full px-4 py-3 rounded-lg bg-[#1C1715] border border-transparent focus:border-orange-500 focus:ring-0 text-white placeholder-gray-500 pr-10"
-                        />
+                            bind:value={password}    
+                            type="password" 
+                            id="password" 
+                            placeholder="********" 
+                            required
+                            class="w-full px-4 py-3 rounded-lg bg-[#1C1715] border border-transparent focus:border-orange-500 focus:ring-0 text-white placeholder-gray-500 pr-10"
+                            />
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label for="confirmPassword" class="text-sm font-medium">Confirm password</label>
+                    <div class="relative">
+                        <input 
+                            bind:value={confirmPassword}
+                            type="password" 
+                            id="confirmPassword" 
+                            placeholder="********" 
+                            required
+                            class="w-full px-4 py-3 rounded-lg bg-[#1C1715] border border-transparent focus:border-orange-500 focus:ring-0 text-white placeholder-gray-500 pr-10"
+                            />
                     </div>
                 </div>
 

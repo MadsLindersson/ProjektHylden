@@ -52,9 +52,8 @@ app.use(express.json());
 
 // Endpoints=========================================================================================
 
-app.get("/", (req, res) => {
-  res.send({ data: "Hello World!" });
-});
+import authenticationRoute from './routes/authenticationRoute.js'
+app.use(authenticationRoute);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

@@ -1,5 +1,44 @@
 <script>
-    import { Link } from 'svelte-routing';
+    import { Link, navigate } from 'svelte-routing';
+    import { signInNotification, somethingWentWrong } from '../../utilFrontend/toastr.js';
+    import { login } from '../../utilFrontend/stores/authStore.js';
+
+    let email = "";
+    let password = "";
+
+    async function handleSubmit ()  {
+        const user = {
+            email: email,
+            password: password
+        };
+
+        try {
+            const response = await fetch ("http://localhost:8080/auth/signIn", {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            });
+
+            const data = await response.json();
+
+            if (response.ok)   {
+                login(data.userId);
+                console.log(data.userId);
+                
+                signInNotification(true);
+                navigate("/")
+            } else  {
+                signInNotification(false);
+            };
+
+        } catch (error)  {
+            console.log("Something went wrong:", error);
+            somethingWentWrong();
+        }
+    }
 </script>
 
 <div class="flex h-screen items-center justify-center">
@@ -38,11 +77,12 @@
                 </p>
             </div>
 
-            <form class="space-y-6">
+            <form on:submit|preventDefault={handleSubmit} class="space-y-6">
                 
                 <div class="space-y-1">
                     <label for="email" class="text-sm font-medium">Email</label>
                     <input 
+                        bind:value={email}
                         type="email" 
                         id="email" 
                         placeholder="you@example.com"
@@ -54,12 +94,11 @@
                     <label for="password" class="text-sm font-medium">Password</label>
                     <div class="relative">
                         <input 
-                        type="password" 
-                        id="password" 
-                        
-                        placeholder="********" 
-                        
-                        class="w-full px-4 py-3 rounded-lg bg-[#1C1715] border border-transparent focus:border-orange-500 focus:ring-0 text-white placeholder-gray-500 pr-10"
+                            bind:value={password}
+                            type="password" 
+                            id="password" 
+                            placeholder="********" 
+                            class="w-full px-4 py-3 rounded-lg bg-[#1C1715] border border-transparent focus:border-orange-500 focus:ring-0 text-white placeholder-gray-500 pr-10"
                         />
                     </div>
                 </div>

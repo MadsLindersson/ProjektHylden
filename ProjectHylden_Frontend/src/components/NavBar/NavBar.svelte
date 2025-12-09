@@ -1,5 +1,23 @@
 <script>
-   import { Link } from 'svelte-routing';
+   import { Link, navigate } from 'svelte-routing';
+   import { authStore, clientLogout } from '../../utilFrontend/stores/authStore.js';
+   import { signOutNotification } from '../../utilFrontend/toastr.js';
+
+   async function handleSignOut () {
+      const response = await fetch("http://localhost:8080/signOut", {
+        method: "DELETE",
+        credentials: "include"
+      });
+
+      if (response.ok)  {
+        clientLogout();
+        signOutNotification(true);
+        navigate("/");
+      } else  {
+        signOutNotification(false);
+        console.log("Something went wrong on the server");
+      };
+   }
 </script>
 
 <nav class="bg-transparent border-b border-gray-800 text-white">
@@ -51,10 +69,16 @@
         <Link to="/Creators" class="text-gray-300 hover:text-white transition duration-150">
           Creators
         </Link>
-        <Link to="/SignIn" class="text-gray-300 hover:text-white transition duration-150">
-          Sign In
-        </Link>
-
+        {#if $authStore.isAuthenticated}
+          <button on:click={handleSignOut} class="text-gray-300 hover:text-white transition duration-150">
+            Sign out
+          </button>
+        {:else}
+          <Link to="/SignIn" class="text-gray-300 hover:text-white transition duration-150">
+            Sign In
+          </Link>
+        {/if}
+<!--    TODO: Needs to change to "my profile" and link to profile page -->
         <Link to="/SignUp" class="
             bg-gradient-to-r 
             from-[#EB7548] to-[#F5AE55] 

@@ -18,6 +18,7 @@
     "vite": "^7.2.4"
   },
   "dependencies": {
-    "svelte-routing": "^2.13.0"
+    "svelte-routing": "^2.13.0",
+    "toastr": "^2.1.4"
   }
 }
