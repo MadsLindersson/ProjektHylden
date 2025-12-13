@@ -1,6 +1,34 @@
 <script>
     import { Link } from 'svelte-routing';
     import NavBar from "../NavBar";
+  import { onMount } from 'svelte';
+
+    let exclude = [];
+
+    let posts = [];
+
+    async function handleGetPosts ()    {
+        const response = await fetch("http://localhost:8080/posts/20", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(exclude)
+        });
+
+        const data = await response.json();
+
+        posts = [...posts, ...data.posts];
+
+        for (let post of data.posts) {
+            exclude.push(post.id);
+        }
+    }
+
+    onMount(() => {
+        handleGetPosts();
+    })
+
 </script>
 <NavBar />
 
@@ -88,77 +116,34 @@
     </div>
     
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        
-        <Link to="/Profile" class="bg-[#1A1715] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition duration-300 cursor-pointer">
-            
-            <div class="relative pb-[75%] bg-gray-700">
-                <div class="absolute inset-0 bg-gradient-to-t from-gray-800 to-gray-700 flex items-center justify-center text-gray-400">
-                    Project Image Placeholder
-                </div>
-            </div>
-
-            <div class="flex justify-between items-center p-3">
+        {#each posts as post}
+            <Link to="/" class="bg-[#1A1715] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition duration-300 cursor-pointer">
                 
-                <div class="flex items-center space-x-2">
-                    <div class="w-6 h-6 rounded-full bg-red-500"></div> <span class="text-sm font-medium text-gray-300">Max Chen</span>
+                <div class="relative pb-[75%] bg-gray-700">
+                    <img
+                        src={post.image_url || "/defaultPost.png"}
+                        alt={post.title}
+                        class="absolute inset-0 w-full h-full object-cover"
+                    />
                 </div>
-                
-                <span class="text-xs text-gray-400 bg-gray-800 px-2 py-0.5 rounded-full">
-                    Photography
-                </span>
-            </div>
-        </Link>
-        
-        <div class="bg-[#1A1715] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition duration-300 cursor-pointer">
-            <div class="relative pb-[75%] bg-gray-700">
-                <div class="absolute inset-0 bg-gradient-to-t from-gray-800 to-gray-700 flex items-center justify-center text-gray-400">
-                    Project Image Placeholder
-                </div>
-            </div>
-            <div class="flex justify-between items-center p-3">
-                <div class="flex items-center space-x-2">
-                    <div class="w-6 h-6 rounded-full bg-blue-500"></div>
-                    <span class="text-sm font-medium text-gray-300">Elena Art</span>
-                </div>
-                <span class="text-xs text-gray-400 bg-gray-800 px-2 py-0.5 rounded-full">
-                    Illustration
-                </span>
-            </div>
-        </div>
 
-        <div class="bg-[#1A1715] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition duration-300 cursor-pointer">
-            <div class="relative pb-[75%] bg-gray-700">
-                <div class="absolute inset-0 bg-gradient-to-t from-gray-800 to-gray-700 flex items-center justify-center text-gray-400">
-                    Project Image Placeholder
+                <div class="flex justify-between items-center p-3">
+                    
+                    <Link to="/profile/{post.user_id}" class="flex items-center space-x-2">
+                        <img 
+                            class="w-6 h-6 rounded-full bg-red-500"
+                            src={post.profile_pic_url || "/defaultProfile.png"}
+                            alt=""
+                        /> 
+                        <span class="text-sm font-medium text-gray-300">{post.username}</span>
+                    </Link>
+                    
+                    <span class="text-xs text-gray-400 bg-gray-800 px-2 py-0.5 rounded-full">
+                        {post.category}
+                    </span>
                 </div>
-            </div>
-            <div class="flex justify-between items-center p-3">
-                <div class="flex items-center space-x-2">
-                    <div class="w-6 h-6 rounded-full bg-green-500"></div>
-                    <span class="text-sm font-medium text-gray-300">Jordan 3D</span>
-                </div>
-                <span class="text-xs text-gray-400 bg-gray-800 px-2 py-0.5 rounded-full">
-                    3D Art
-                </span>
-            </div>
-        </div>
-
-        <div class="bg-[#1A1715] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition duration-300 cursor-pointer">
-            <div class="relative pb-[75%] bg-gray-700">
-                <div class="absolute inset-0 bg-gradient-to-t from-gray-800 to-gray-700 flex items-center justify-center text-gray-400">
-                    Project Image Placeholder
-                </div>
-            </div>
-            <div class="flex justify-between items-center p-3">
-                <div class="flex items-center space-x-2">
-                    <div class="w-6 h-6 rounded-full bg-yellow-600"></div>
-                    <span class="text-sm font-medium text-gray-300">Maya Patel</span>
-                </div>
-                <span class="text-xs text-gray-400 bg-gray-800 px-2 py-0.5 rounded-full">
-                    Typography
-                </span>
-            </div>
-        </div>
+            </Link>
+        {/each}
         
         </div>
 </div>

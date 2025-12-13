@@ -21,22 +21,22 @@
       <MainPage />
     </Route>
 
-    <Route path="/SignIn">
+    <Route path="/signin">
       <SignIn />
     </Route>
 
-    <Route path="/SignUp">
+    <Route path="/signup">
       <SignUp />
     </Route>
 
-    <Route path="/Creators">
+    <Route path="/creators">
       <Creators />
     </Route>
 
-    <Route path="/Profile">
-      <Profile />
+    <Route path="/profile/:id" let:params>
+      <Profile id = {params.id}/>
     </Route>
-
+    
   </Router>
 </main>
 

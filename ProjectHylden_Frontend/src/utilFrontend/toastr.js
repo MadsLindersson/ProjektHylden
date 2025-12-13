@@ -47,3 +47,7 @@ export function somethingWentWrong () {
 export function emailOrUsernameExists ()  {
   toastr.error("Email or username already already exists, sign in with your account!");
 }
+
+toastr.options = {
+    "positionClass": "toast-bottom-right"
+};

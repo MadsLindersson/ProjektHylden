@@ -12,7 +12,7 @@
       if (response.ok)  {
         clientLogout();
         signOutNotification(true);
-        navigate("/");
+        window.location.reload;
       } else  {
         signOutNotification(false);
         console.log("Something went wrong on the server");
@@ -66,20 +66,31 @@
         <Link to="/" class="text-gray-300 hover:text-white transition duration-150">
           Explore
         </Link>
-        <Link to="/Creators" class="text-gray-300 hover:text-white transition duration-150">
+        <Link to="/creators" class="text-gray-300 hover:text-white transition duration-150">
           Creators
         </Link>
         {#if $authStore.isAuthenticated}
-          <button on:click={handleSignOut} class="text-gray-300 hover:text-white transition duration-150">
+          <button on:click={handleSignOut} class="text-gray-300 hover:text-white transition duration-150 cursor-pointer">
             Sign out
           </button>
+
+          <Link to="/profile/{$authStore.userId}" class="
+              inline-block 
+              transition 
+              duration-200 
+              ease-in-out
+              hover:scale-110 
+              hover:opacity-80
+            ">
+              <img src="/profileLogo.svg" alt="profile_logo" class="h-10 w-10">
+          </Link>
+
         {:else}
-          <Link to="/SignIn" class="text-gray-300 hover:text-white transition duration-150">
+          <Link to="/signin" class="text-gray-300 hover:text-white transition duration-150">
             Sign In
           </Link>
-        {/if}
-<!--    TODO: Needs to change to "my profile" and link to profile page -->
-        <Link to="/SignUp" class="
+
+          <Link to="/signup" class="
             bg-gradient-to-r 
             from-[#EB7548] to-[#F5AE55] 
             hover:from-[#E16538] hover:to-[#E59E45] 
@@ -89,7 +100,10 @@
             cursor-pointer
           ">
             Join Now
-        </Link>
+          </Link>
+        {/if}
+<!--    TODO: Needs to change to "my profile" and link to profile page -->
+
       </div>
     </div>
   </div>

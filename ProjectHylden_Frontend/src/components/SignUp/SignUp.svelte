@@ -7,7 +7,9 @@
     let password = "";
     let confirmPassword = "";
 
-    async function handleSubmit ()  {
+    async function handleSubmit (event)  {
+        event.preventDefault();
+
         if (password !== confirmPassword)   {
             pwNotAMatch();
             return;
@@ -31,7 +33,7 @@
 
             if (response.ok)   {
                 accountCreated(true);
-                navigate("/SignIn")
+                navigate("/signin")
             } else  {
                 emailOrUsernameExists();
             };
@@ -79,7 +81,7 @@
                 </p>
             </div>
 
-            <form on:submit|preventDefault={handleSubmit} class="space-y-6">
+            <form onsubmit={handleSubmit} class="space-y-6">
 
                 <div class="space-y-1">
                     <label for="username" class="text-sm font-medium">Username</label>
@@ -145,7 +147,7 @@
             
             <div class="text-center text-sm pt-4">
                 Already have an account? 
-                <Link to="/SignIn" class="text-[#EB7548] hover:text-[#E59E45] transition duration-150 font-medium cursor-pointer">
+                <Link to="/signin" class="text-[#EB7548] hover:text-[#E59E45] transition duration-150 font-medium cursor-pointer">
                     Sign in
                 </Link>
             </div>

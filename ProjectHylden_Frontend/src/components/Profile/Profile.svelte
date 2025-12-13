@@ -1,5 +1,34 @@
 <script>
+    import { onMount } from "svelte";
+    import { Link } from 'svelte-routing';
     import NavBar from "../NavBar"; 
+
+    export let id;
+
+    let user = {};
+
+    let posts = [];
+
+    async function handleGetUserAndPosts ()    {
+        const response = await fetch(`http://localhost:8080/users/${id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        const data = await response.json();
+
+        user = data.user;
+
+        posts = data.posts;
+        
+    }
+
+    onMount(() => {
+        handleGetUserAndPosts();
+    })
+    
 </script>
 
 <NavBar /> 
@@ -9,19 +38,20 @@
     <header class="mb-10 flex items-start space-x-6">
         
         <div class="flex-shrink-0">
-            <div class="w-24 h-24 rounded-full bg-yellow-500 overflow-hidden">
-                </div>
+            <img
+            src={user.profile_pic_url || "/defaultProfile.png"}
+            alt="No profile pic" 
+            class="w-24 h-24 rounded-full bg-yellow-500 overflow-hidden"
+            />
+            
         </div>
 
         <div class="space-y-1 pt-2">
             <h1 class="text-4xl font-extrabold tracking-tight">
-                Max Chen
+                {user.username}
             </h1>
-            <p class="text-lg text-gray-400">
-                @max_creative
-            </p>
             <p class="text-xl text-gray-300 max-w-3xl">
-                Photographer & visual storyteller. Capturing moments that matter.
+                {user.bio}
             </p>
             
             <div class="flex items-center space-x-4 text-gray-500 text-sm pt-2">
@@ -32,11 +62,14 @@
                         <line x1="8" y1="2" x2="8" y2="6"></line>
                         <line x1="3" y1="10" x2="21" y2="10"></line>
                     </svg>
-                    <span>Joined February 2024</span>
+                    <span>
+                        {new Date(user.created_at).toLocaleDateString("da-DK", { month: "long", year: "numeric" })}
+                    </span>
+
                 </span>
                 
-                <span class="text-white">•</span>
-                <span>3 posts</span>
+                <span class="text-[#F5AE55] ">•</span>
+                <span>{posts.length} posts</span>
             </div>
         </div>
     </header>
@@ -98,37 +131,25 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         
-        <div class="bg-gray-800 rounded-lg overflow-hidden shadow-xl h-72">
-            <div class="h-4/5 w-full bg-gradient-to-t from-gray-700 to-gray-800"></div>
-            <div class="flex justify-between items-center p-3 h-1/5 bg-gray-900">
-                <span class="text-sm">Content Title</span>
-                <span class="text-xs text-gray-500 bg-[#1A1715] px-2 py-0.5 rounded-full">Photography</span>
-            </div>
-        </div>
-        
-        <div class="bg-gray-800 rounded-lg overflow-hidden shadow-xl h-72">
-            <div class="h-4/5 w-full bg-gradient-to-t from-gray-700 to-gray-800"></div>
-            <div class="flex justify-between items-center p-3 h-1/5 bg-gray-900">
-                <span class="text-sm">Content Title</span>
-                <span class="text-xs text-gray-500 bg-[#1A1715] px-2 py-0.5 rounded-full">Illustration</span>
-            </div>
-        </div>
+        {#each posts as post}
+            <Link to="/" class="bg-[#1A1715] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition duration-300 cursor-pointer">
+                
+                <div class="relative pb-[75%] bg-gray-700">
+                    <img
+                        src={post.image_url || "/defaultPost.png"}
+                        alt={post.title}
+                        class="absolute inset-0 w-full h-full object-cover"
+                    />
+                </div>
 
-        <div class="bg-gray-800 rounded-lg overflow-hidden shadow-xl h-72">
-            <div class="h-4/5 w-full bg-gradient-to-t from-gray-700 to-gray-800"></div>
-            <div class="flex justify-between items-center p-3 h-1/5 bg-gray-900">
-                <span class="text-sm">Content Title</span>
-                <span class="text-xs text-gray-500 bg-[#1A1715] px-2 py-0.5 rounded-full">Digital Art</span>
-            </div>
-        </div>
+                <div class="flex justify-end items-center p-3">
+                    <span class="text-xs text-gray-400 bg-gray-800 px-2 py-0.5 rounded-full">
+                        {post.category}
+                    </span>
+                </div>
+            </Link>
+        {/each}
 
-        <div class="bg-gray-800 rounded-lg overflow-hidden shadow-xl h-72">
-            <div class="h-4/5 w-full bg-gradient-to-t from-gray-700 to-gray-800"></div>
-            <div class="flex justify-between items-center p-3 h-1/5 bg-gray-900">
-                <span class="text-sm">Content Title</span>
-                <span class="text-xs text-gray-500 bg-[#1A1715] px-2 py-0.5 rounded-full">Photography</span>
-            </div>
-        </div>
         
     </div>
 

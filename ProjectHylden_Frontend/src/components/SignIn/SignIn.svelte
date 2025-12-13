@@ -6,7 +6,8 @@
     let email = "";
     let password = "";
 
-    async function handleSubmit ()  {
+    async function handleSubmit (event)  {
+        event.preventDefault();
         const user = {
             email: email,
             password: password
@@ -29,7 +30,7 @@
                 console.log(data.userId);
                 
                 signInNotification(true);
-                navigate("/")
+                navigate("/");
             } else  {
                 signInNotification(false);
             };
@@ -77,7 +78,7 @@
                 </p>
             </div>
 
-            <form on:submit|preventDefault={handleSubmit} class="space-y-6">
+            <form onsubmit={handleSubmit} class="space-y-6">
                 
                 <div class="space-y-1">
                     <label for="email" class="text-sm font-medium">Email</label>
@@ -115,7 +116,7 @@
             
             <div class="text-center text-sm pt-4">
                 Don't have an account? 
-                <Link to="/SignUp" class="text-[#EB7548] hover:text-[#E59E45] transition duration-150 font-medium cursor-pointer">
+                <Link to="/signup" class="text-[#EB7548] hover:text-[#E59E45] transition duration-150 font-medium cursor-pointer">
                     Sign up
                 </Link>
             </div>

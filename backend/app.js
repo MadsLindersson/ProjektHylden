@@ -55,6 +55,12 @@ app.use(express.json());
 import authenticationRoute from './routes/authenticationRoute.js'
 app.use(authenticationRoute);
 
+import mainPageRoute from './routes/mainPageRoute.js';
+app.use(mainPageRoute);
+
+import profileRoute from './routes/profileRoute.js';
+app.use(profileRoute);
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log("Server has startet on port", PORT);
