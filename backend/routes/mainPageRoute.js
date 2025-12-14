@@ -12,10 +12,11 @@ router.post("/posts/:amount", async (req, res) => {
             SELECT 
             posts.id, 
             posts.title, 
-            posts.category, 
+            posts.category_id, 
+            categories.name AS category_name,
             posts.user_id, 
             users.username,
-            users.profile_pic_url, 
+            users.profile_pic_url,
                 (
                     SELECT image_url 
                     FROM post_images 
@@ -25,8 +26,7 @@ router.post("/posts/:amount", async (req, res) => {
                 ) AS image_url
             FROM posts
             JOIN users ON posts.user_id = users.id
-            ORDER BY RANDOM()
-            LIMIT ?;
+            JOIN categories ON posts.category_id = categories.id 
         `;
         
         let params = [];

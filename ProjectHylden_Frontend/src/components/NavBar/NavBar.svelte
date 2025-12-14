@@ -41,7 +41,7 @@
         <div class="relative hidden sm:block">
           <input
             type="text"
-            placeholder="Search posts or creators..."
+            placeholder="Search..."
             class="w-96 bg-[#1A1715] text-gray-400 placeholder-gray-500 rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
           >
           <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
@@ -102,7 +102,6 @@
             Join Now
           </Link>
         {/if}
-<!--    TODO: Needs to change to "my profile" and link to profile page -->
 
       </div>
     </div>

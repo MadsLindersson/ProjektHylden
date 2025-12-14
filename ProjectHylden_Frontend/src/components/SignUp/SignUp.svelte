@@ -66,7 +66,7 @@
                 <div class="flex items-center text-xl font-bold">
                     <div class="flex items-center cursor-pointer"> 
                         <img 
-                        src="/src/assets/logo.png" 
+                        src="/logo.png" 
                         alt="logo" 
                         class="h-10 w-auto" 
                         >
@@ -169,6 +169,5 @@
                 </p>
             </div>
         </div>
-
     </div>
 </div>

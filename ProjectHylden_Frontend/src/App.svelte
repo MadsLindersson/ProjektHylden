@@ -9,6 +9,7 @@
   import SignUp from './components/SignUp';
   import Creators from './components/Creators';
   import Profile from './components/Profile';
+  import CreatePost from './components/CreatePost/CreatePost.svelte';
 
   onMount(checkAuthStatus);
 
@@ -37,6 +38,10 @@
       <Profile id = {params.id}/>
     </Route>
     
+    <Route path="/createpost">
+      <CreatePost />
+    </Route>
+
   </Router>
 </main>
 

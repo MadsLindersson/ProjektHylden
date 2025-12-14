@@ -1,6 +1,8 @@
 <script>
     import { onMount } from "svelte";
     import { Link } from 'svelte-routing';
+    import { authStore } from "../../utilFrontend/stores/authStore.js";
+
     import NavBar from "../NavBar"; 
 
     export let id;
@@ -27,7 +29,11 @@
 
     onMount(() => {
         handleGetUserAndPosts();
-    })
+    });
+
+    $: if (id) {
+        handleGetUserAndPosts();
+    }
     
 </script>
 
@@ -37,23 +43,29 @@
 
     <header class="mb-10 flex items-start space-x-6">
         
-        <div class="flex-shrink-0">
-            <img
+        <div class="flex-shrink-0 relative"> <img
             src={user.profile_pic_url || "/defaultProfile.png"}
             alt="No profile pic" 
             class="w-24 h-24 rounded-full bg-yellow-500 overflow-hidden"
             />
-            
+            {#if $authStore.isAuthenticated && $authStore.userId == id}
+                <img src="/edit.svg" alt="" class="absolute bottom-0 right-0 p-1 bg-transparent rounded-full text-white shadow-lg h-7 cursor-pointer hover:bg-[#F5AE55] transition duration-150">
+            {/if}
         </div>
 
         <div class="space-y-1 pt-2">
             <h1 class="text-4xl font-extrabold tracking-tight">
                 {user.username}
             </h1>
-            <p class="text-xl text-gray-300 max-w-3xl">
-                {user.bio}
-            </p>
             
+            <div class="flex items-center space-x-2">
+                <p class="text-xl text-gray-300 max-w-3xl">
+                    {user.bio}
+                </p>
+                {#if $authStore.isAuthenticated && $authStore.userId == id}
+                    <img src="/edit.svg" alt="" class="p-1 bg-transparent rounded-full text-white shadow-lg h-7 cursor-pointer hover:bg-[#F5AE55] transition duration-150">
+                {/if}
+            </div>
             <div class="flex items-center space-x-4 text-gray-500 text-sm pt-2">
                 <span class="flex items-center space-x-1">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
@@ -130,6 +142,16 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {#if $authStore.isAuthenticated && $authStore.userId == id}
+            <Link to="/createpost" class="bg-gray-800 rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition duration-300 cursor-pointer border border-gray-800 hover:bg-gray-700 hover:border-[#F5AE55] hover:shadow-lg">
+                <div class="relative flex items-center justify-center">
+                    <img
+                        src="/plusIcon.svg"
+                        alt="Create post" 
+                    />
+                </div>
+            </Link>
+        {/if}
         
         {#each posts as post}
             <Link to="/" class="bg-[#1A1715] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition duration-300 cursor-pointer">
@@ -144,13 +166,11 @@
 
                 <div class="flex justify-end items-center p-3">
                     <span class="text-xs text-gray-400 bg-gray-800 px-2 py-0.5 rounded-full">
-                        {post.category}
+                        {post.category_name}
                     </span>
                 </div>
             </Link>
         {/each}
 
-        
     </div>
-
 </div>

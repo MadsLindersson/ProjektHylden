@@ -7,6 +7,8 @@
 
     let posts = [];
 
+    let categories = [];
+
     async function handleGetPosts ()    {
         const response = await fetch("http://localhost:8080/posts/20", {
             method: "POST",
@@ -34,12 +36,6 @@
 
 <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-16">
     
-    <div class="flex justify-center mb-8">
-        <div class="inline-flex items-center space-x-2 text-sm font-medium py-1 px-4 rounded-full border border-[#EB7548] bg-[#22140F] text-[#EB7548]">
-            <span>A home for creators</span>
-        </div>
-    </div>
-
     <header class="text-center mb-6">
         <h1 class="text-6xl sm:text-7xl font-extrabold tracking-tight mb-4 text-white">
             Share Your 
@@ -139,7 +135,7 @@
                     </Link>
                     
                     <span class="text-xs text-gray-400 bg-gray-800 px-2 py-0.5 rounded-full">
-                        {post.category}
+                        {post.category_name}
                     </span>
                 </div>
             </Link>
