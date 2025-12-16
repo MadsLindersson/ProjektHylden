@@ -14,11 +14,13 @@
     "autoprefixer": "^10.4.22",
     "postcss": "^8.5.6",
     "svelte": "^5.43.8",
+    "tailwind-scrollbar": "^4.0.2",
     "tailwindcss": "^4.1.17",
     "vite": "^7.2.4"
   },
   "dependencies": {
     "svelte-routing": "^2.13.0",
+    "tailwindcss-scrollbar": "^0.1.0",
     "toastr": "^2.1.4"
   }
 }

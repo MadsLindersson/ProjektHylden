@@ -27,8 +27,6 @@
 
             if (response.ok)   {
                 login(data.userId);
-                console.log(data.userId);
-                
                 signInNotification(true);
                 navigate("/");
             } else  {

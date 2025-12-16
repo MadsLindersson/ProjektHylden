@@ -36,6 +36,14 @@ export function accountCreated (hasCreated)  {
   }
 }
 
+export function profileUpdated (hasCreated)  {
+    if (hasCreated) {
+      toastr.success("Profile Updated!");
+  } else {
+      toastr.error("Profile Updateding failed");
+  }
+}
+
 export function pwNotAMatch ()  {
   toastr.error("Passwords do not match!");
 }

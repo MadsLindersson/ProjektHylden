@@ -48,4 +48,35 @@ router.post("/posts/:amount", async (req, res) => {
     }
 });
 
+router.get("/posts/:id", async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        const posts = await db.all(`
+            SELECT 
+                p.id, 
+                p.title, 
+                p.category_id, 
+                c.name AS category_name,
+                p.user_id, 
+                (
+                    SELECT image_url 
+                    FROM post_images 
+                    WHERE post_images.post_id = p.id 
+                    ORDER BY order_index ASC 
+                    LIMIT 1
+                ) AS image_url
+            FROM posts p
+            JOIN categories c ON p.category_id = c.id
+            WHERE p.user_id = ?
+            ORDER BY p.id DESC;
+        `, userId);
+
+        res.send({ posts: posts });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ error: "Database error" });
+    }
+});
+
 export default router;

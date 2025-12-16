@@ -1,7 +1,9 @@
 <script>
     import { Link } from 'svelte-routing';
+    import { onMount } from 'svelte';
+
     import NavBar from "../NavBar";
-  import { onMount } from 'svelte';
+    import CategoriesBar from '../CategoriesBar';
 
     let exclude = [];
 
@@ -78,38 +80,7 @@
         </div>
     </div>
 
-    <div class="flex space-x-3 overflow-x-auto pb-4 mb-8">
-        <button class="flex-shrink-0 bg-[#EB7548] text-white font-medium py-2 px-4 rounded-lg shadow-md">
-            All
-        </button>
-        <button class="flex-shrink-0 bg-[#1A1715] hover:bg-gray-800 text-gray-300 font-medium py-2 px-4 rounded-lg transition duration-150">
-            Photography
-        </button>
-        <button class="flex-shrink-0 bg-[#1A1715] hover:bg-gray-800 text-gray-300 font-medium py-2 px-4 rounded-lg transition duration-150">
-            Illustration
-        </button>
-        <button class="flex-shrink-0 bg-[#1A1715] hover:bg-gray-800 text-gray-300 font-medium py-2 px-4 rounded-lg transition duration-150">
-            Digital Art
-        </button>
-        <button class="flex-shrink-0 bg-[#1A1715] hover:bg-gray-800 text-gray-300 font-medium py-2 px-4 rounded-lg transition duration-150">
-            Graphic Design
-        </button>
-        <button class="flex-shrink-0 bg-[#1A1715] hover:bg-gray-800 text-gray-300 font-medium py-2 px-4 rounded-lg transition duration-150">
-            UI/UX
-        </button>
-        <button class="flex-shrink-0 bg-[#1A1715] hover:bg-gray-800 text-gray-300 font-medium py-2 px-4 rounded-lg transition duration-150">
-            Typography
-        </button>
-        <button class="flex-shrink-0 bg-[#1A1715] hover:bg-gray-800 text-gray-300 font-medium py-2 px-4 rounded-lg transition duration-150">
-            3D Art
-        </button>
-        <button class="flex-shrink-0 bg-[#1A1715] hover:bg-gray-800 text-gray-300 font-medium py-2 px-4 rounded-lg transition duration-150">
-            Animation
-        </button>
-        <button class="flex-shrink-0 bg-[#1A1715] hover:bg-gray-800 text-gray-300 font-medium py-2 px-4 rounded-lg transition duration-150">
-            Fine Art
-        </button>
-    </div>
+    <CategoriesBar />
     
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {#each posts as post}

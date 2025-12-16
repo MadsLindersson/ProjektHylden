@@ -28,7 +28,7 @@ app.use(helmet());
 import { rateLimit } from "express-rate-limit";
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+  limit: 2000, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
   standardHeaders: "draft-8", // draft-6: `RateLimit-*` headers; draft-7 & draft-8: combined `RateLimit` header
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
   ipv6Subnet: 56, // Set to 60 or 64 to be less aggressive, or 52 or 48 to be more aggressive
@@ -50,16 +50,24 @@ app.use("/auth/", authLimiter);
 
 app.use(express.json());
 
+app.use('/uploads', (req, res, next) => {
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    next();
+}, express.static('uploads'));
+
 // Endpoints=========================================================================================
 
 import authenticationRoute from './routes/authenticationRoute.js'
 app.use(authenticationRoute);
 
-import mainPageRoute from './routes/mainPageRoute.js';
-app.use(mainPageRoute);
+import postsRoute from './routes/postsRoute.js';
+app.use(postsRoute);
 
-import profileRoute from './routes/profileRoute.js';
-app.use(profileRoute);
+import usersRoute from './routes/usersRoute.js';
+app.use(usersRoute);
+
+import categoryRoute from './routes/categoryRoute.js';
+app.use(categoryRoute);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

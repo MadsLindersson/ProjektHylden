@@ -1,5 +1,6 @@
 <script>
     import { Link } from "svelte-routing";
+    import { authStore } from "../../utilFrontend/stores/authStore.js";
 
     let title = '';
     let description = '';
@@ -17,7 +18,7 @@
 
         <div class="w-full lg:w-1/2 p-12 space-y-8 text-white">
             
-            <Link to="/" class="
+            <Link to="/profile/{$authStore.userId}" class="
                 inline-flex items-center
                 text-gray-400 hover:text-white 
                 transition duration-150 text-sm 
@@ -25,7 +26,7 @@
             "
             >
                 <span class="mr-2">←</span> 
-                Back to home
+                Back to profile
             </Link>
             
             <div class="space-y-1">
@@ -95,10 +96,6 @@
                 </button>
             </form>
 
-            <div class="text-center text-sm pt-4 text-gray-400">
-                All fields are saved automatically.
-            </div>
-
         </div>
 
         <div class="hidden lg:block lg:w-1/2 p-8 bg-gradient-to-r from-[#0D0B09] to-[#391E15]">
@@ -115,7 +112,7 @@
                         </svg>
 
                         <p class="text-base font-semibold">Click to upload images</p>
-                        <p class="text-sm">PNG, JPG, GIF (Max 10MB)</p>
+                        <p class="text-sm">PNG, JPG</p>
                         
                         <input 
                             type="file" 

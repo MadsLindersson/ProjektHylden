@@ -9,7 +9,9 @@
   import SignUp from './components/SignUp';
   import Creators from './components/Creators';
   import Profile from './components/Profile';
-  import CreatePost from './components/CreatePost/CreatePost.svelte';
+  import CreatePost from './components/CreatePost';
+  import EditProfile from './components/EditProfile';
+
 
   onMount(checkAuthStatus);
 
@@ -40,6 +42,10 @@
     
     <Route path="/createpost">
       <CreatePost />
+    </Route>
+
+    <Route path="/editprofile/:id" let:params>
+      <EditProfile id = {params.id}/>
     </Route>
 
   </Router>
