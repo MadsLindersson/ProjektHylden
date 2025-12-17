@@ -2,8 +2,11 @@
     import { Link } from 'svelte-routing';
     import { onMount } from 'svelte';
 
+
+
     import NavBar from "../NavBar";
     import CategoriesBar from '../CategoriesBar';
+    import PostCard from '../PostCard/PostCard.svelte';
 
     let exclude = [];
 
@@ -12,7 +15,7 @@
     let categories = [];
 
     async function handleGetPosts ()    {
-        const response = await fetch("http://localhost:8080/posts/20", {
+        const response = await fetch("http://localhost:8080/posts/gallery/20", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -84,33 +87,7 @@
     
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {#each posts as post}
-            <Link to="/" class="bg-[#1A1715] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition duration-300 cursor-pointer">
-                
-                <div class="relative pb-[75%] bg-gray-700">
-                    <img
-                        src={post.image_url || "/defaultPost.png"}
-                        alt={post.title}
-                        class="absolute inset-0 w-full h-full object-cover"
-                    />
-                </div>
-
-                <div class="flex justify-between items-center p-3">
-                    
-                    <Link to="/profile/{post.user_id}" class="flex items-center space-x-2">
-                        <img 
-                            class="w-6 h-6 rounded-full bg-red-500"
-                            src={post.profile_pic_url || "/defaultProfile.png"}
-                            alt=""
-                        /> 
-                        <span class="text-sm font-medium text-gray-300">{post.username}</span>
-                    </Link>
-                    
-                    <span class="text-xs text-gray-400 bg-gray-800 px-2 py-0.5 rounded-full">
-                        {post.category_name}
-                    </span>
-                </div>
-            </Link>
-        {/each}
-        
-        </div>
+            <PostCard post = {post}/>
+        {/each}   
+    </div>
 </div>

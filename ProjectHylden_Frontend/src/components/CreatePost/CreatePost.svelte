@@ -1,15 +1,65 @@
 <script>
-    import { Link } from "svelte-routing";
+    import { Link, navigate } from "svelte-routing";
     import { authStore } from "../../utilFrontend/stores/authStore.js";
+    import { onMount } from "svelte";
+    import { postCreated } from "../../utilFrontend/toastr.js";
+  import { API_URL } from "../../utilFrontend/constants.js";
 
-    let title = '';
-    let description = '';
-    let category = '';
+    let title = "";
+    let description = "";
+    let category;
+    let files;
 
-    function handleSubmit(e) {
-        // e.preventDefault();
-        // Logic for handling post creation
+    async function handleSubmit(event) {
+        event.preventDefault();
+        
+        const formData = new FormData();
+
+        formData.append("title", title);
+        formData.append("description", description);
+        formData.append("category", category);
+
+        if (files)   {
+            for (let i = 0; i < files.length; i++)  {
+                formData.append("postImages", files[i]);
+            }
+        };
+
+        try {
+            const response = await fetch(`${API_URL}/posts/${$authStore.userId}`, {
+                method: "POST",
+                body: formData
+            });        
+
+            if (response.ok) {
+                postCreated(true);
+                navigate(`/profile/${$authStore.userId}`);
+            } else  {
+                postCreated(false);
+            };
+        } catch (err)   {
+            console.log("Something went wrong");  
+        }
     }
+
+    let categories = [];
+
+    async function handleGetCategories ()   {
+        const response = await fetch("http://localhost:8080/categories", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        const data = await response.json();
+        
+        categories = data.categories;
+    }
+
+    onMount(() => {
+        handleGetCategories();
+    });
 </script>
 
 <div class="flex h-screen items-center justify-center">
@@ -63,7 +113,7 @@
                 </div>
 
                 <div class="space-y-1">
-                    <label for="description" class="text-sm font-medium">Description</label>
+                    <label for="description" class="text-sm font-medium">Description <span class="text-gray-500">(optional)</span></label>
                     <textarea 
                         bind:value={description}
                         id="description" 
@@ -80,9 +130,14 @@
                         id="category" 
                         placeholder="e.g., Photography, UI/UX, 3D Art"
                         class="w-full px-4 py-3 rounded-lg bg-[#1C1715] border border-transparent focus:border-orange-500 focus:ring-0 text-white placeholder-gray-500"
+                        required
                         >
-                        
-                        
+
+                        <option value="" disabled selected>Select a category</option>
+    
+                        {#each categories as category}
+                            <option value={category.id}>{category.name}</option>
+                        {/each}
                     </select> 
                 </div>
 
@@ -119,7 +174,9 @@
                             id="image-upload" 
                             accept="image/*" 
                             class="hidden"
+                            required
                             multiple
+                            bind:files={files}
                             />
                     </div>
                 </label>

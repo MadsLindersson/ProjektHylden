@@ -19,4 +19,4 @@ const createStorage = (subfolder) => multer.diskStorage({
 
 // Create and export two different middleware tools
 export const uploadProfilePicture = multer({ storage: createStorage('profilePictures') });
-export const uploadPostPicture = multer({ storage: createStorage('postPictures') });
+export const uploadPostPicture = multer({ storage: createStorage('postImages') });

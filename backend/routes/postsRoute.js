@@ -2,8 +2,43 @@ import { Router } from "express";
 const router = Router();
 
 import db from '../database/connection.js';
+import { uploadPostPicture } from "../utilBackend/multerConfig.js";
 
-router.post("/posts/:amount", async (req, res) => {
+router.get("/posts/:id", async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        const posts = await db.all(`
+            SELECT 
+                posts.id, 
+                posts.title, 
+                posts.category_id, 
+                categories.name AS category_name,
+                posts.user_id, 
+                users.username,
+                (
+                    SELECT image_url 
+                    FROM post_images 
+                    WHERE post_images.post_id = posts.id 
+                    ORDER BY order_index ASC 
+                    LIMIT 1
+                ) AS image_url
+            FROM posts posts
+            JOIN categories categories ON posts.category_id = categories.id
+            JOIN users ON posts.user_id = users.id
+            WHERE posts.user_id = ?
+            ORDER BY posts.id DESC;
+        `, userId);
+
+        res.send({ posts: posts });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ error: "Database error" });
+    }
+});
+
+// Is a GET but has to be post so the frontend can send a list of id's to exclude, to avoid dublicates.
+router.post("/posts/gallery/:amount", async (req, res) => {
     try {
         const amount = parseInt(req.params.amount, 10);
         const exclude = req.body.exclude || [];
@@ -48,35 +83,36 @@ router.post("/posts/:amount", async (req, res) => {
     }
 });
 
-router.get("/posts/:id", async (req, res) => {
+router.post("/posts/:id", uploadPostPicture.array('postImages'), async (req, res) => {
     try {
         const userId = req.params.id;
+        const {title, description, category} = req.body;
 
-        const posts = await db.all(`
-            SELECT 
-                p.id, 
-                p.title, 
-                p.category_id, 
-                c.name AS category_name,
-                p.user_id, 
-                (
-                    SELECT image_url 
-                    FROM post_images 
-                    WHERE post_images.post_id = p.id 
-                    ORDER BY order_index ASC 
-                    LIMIT 1
-                ) AS image_url
-            FROM posts p
-            JOIN categories c ON p.category_id = c.id
-            WHERE p.user_id = ?
-            ORDER BY p.id DESC;
-        `, userId);
+        const postResult = await db.run(`INSERT INTO posts (title, description, category_id, user_id, created_at)
+            VALUES (?, ?, ?, ?, DATETIME('now'))`, [title, description, category, userId]);
 
-        res.send({ posts: posts });
-    } catch (err) {
+        let postId = postResult.lastID 
+    
+        if (req.files && req.files.length > 0)   {
+            for (let i = 0; i < req.files.length; i++) {
+                const imageUrl = `/uploads/postImages/${req.files[i].filename}`;
+                
+                await db.run(
+                    `INSERT INTO post_images (post_id, image_url, order_index) 
+                     VALUES (?, ?, ?)`,
+                    [postId, imageUrl, i]
+                );
+            }
+        };
+
+        res.status(201).send({ data: "Post created" })
+
+
+    } catch (err)   {
         console.error(err);
         res.status(500).send({ error: "Database error" });
     }
 });
+
 
 export default router;

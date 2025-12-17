@@ -6,8 +6,13 @@
 
     import NavBar from "../NavBar";
     import CategoriesBar from "../CategoriesBar";
+    import PostCard from '../PostCard/PostCard.svelte';
+    import Post from "../Post/Post.svelte";
+
 
     export let id;
+
+    export let postModal = "true";
 
     let user = {};
 
@@ -40,7 +45,7 @@
         posts = data.posts;
     }
 
-    function handleImageError(event) {
+    function handleProfileImageError(event) {
         const img = event.currentTarget;
         if (img instanceof HTMLImageElement) {
             img.src = "/defaultProfile.png";
@@ -68,7 +73,7 @@
         <div class="flex-shrink-0 relative"> 
             <img
                 src={`${API_URL}${user.profile_pic_url}`}
-                on:error={handleImageError}
+                on:error={handleProfileImageError}
                 alt="No profile pic" 
                 class="w-24 h-24 rounded-full bg-yellow-500 overflow-hidden"
             />
@@ -150,22 +155,12 @@
         {/if}
         
         {#each posts as post}
-            <Link to="/" class="bg-[#1A1715] rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition duration-300 cursor-pointer">
-                
-                <div class="relative pb-[75%] bg-gray-700">
-                    <img
-                        src={post.image_url || "/defaultPost.png"}
-                        alt={post.title}
-                        class="absolute inset-0 w-full h-full object-cover"
-                    />
-                </div>
-
-                <div class="flex justify-end items-center p-3">
-                    <span class="text-xs text-gray-400 bg-gray-800 px-2 py-0.5 rounded-full">
-                        {post.category_name}
-                    </span>
-                </div>
-            </Link>
-        {/each}
+            <PostCard post = {post}/>
+        {/each}   
     </div>
+
+    <!-- TODO: Make the modal show only when a specific post is clicked and send the post id instead of the user id to Post component -->
+    {#if postModal === "true"}
+        <Post userId = {id}/>
+    {/if}
 </div>
