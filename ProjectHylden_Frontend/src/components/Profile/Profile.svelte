@@ -36,7 +36,7 @@
     }
 
         async function handleGetPosts ()    {
-        const response = await fetch(`http://localhost:8080/posts/profile/${userId}`, {
+        const response = await fetch(`http://localhost:8080/posts/${userId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"

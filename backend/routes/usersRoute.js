@@ -7,13 +7,17 @@ import { uploadProfilePicture } from '../utilBackend/multerConfig.js';
 
 router.get("/users", async (req, res) => {
     try {
-        const users = await db.all(`SELECT 
-            id,
-            username,
-            profile_pic_url,
-            bio,
-            created_at
-            FROM users`);
+        const users = await db.all(`
+            SELECT 
+            users.id, 
+            users.username, 
+            users.bio,
+            users.profile_pic_url,
+            COUNT(posts.id) AS post_count
+            FROM users
+            LEFT JOIN posts ON users.id = posts.user_id
+            GROUP BY users.id
+            ORDER BY post_count DESC`);
 
         res.send({ users: users });
     } catch (error) {

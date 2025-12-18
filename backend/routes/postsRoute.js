@@ -4,7 +4,7 @@ const router = Router();
 import db from '../database/connection.js';
 import { uploadPostPicture } from "../utilBackend/multerConfig.js";
 
-router.get("/posts/profile/:userId", async (req, res) => {
+router.get("/posts/:userId", async (req, res) => {
     try {
         const userId = req.params.userId;
 

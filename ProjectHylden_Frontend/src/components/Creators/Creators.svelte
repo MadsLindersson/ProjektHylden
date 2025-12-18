@@ -1,6 +1,30 @@
 <script>
+    import { API_URL } from '../../utilFrontend/constants.js';
     import { Link } from 'svelte-routing';
+    import { handleProfileImageError } from '../../utilFrontend/imageErrors.js';
+
     import NavBar from "../NavBar";
+    
+    
+
+    let users = $state();
+
+    async function handleGetUsers ()    {
+        const response = await fetch(`${API_URL}/users`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "appliction/json"
+            }
+        });
+
+        const data = await response.json();
+
+        users = data.users;
+    }
+
+    $effect(() => {
+        handleGetUsers();
+    })
 </script>
 
 <NavBar />
@@ -42,139 +66,30 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
-        <div class="bg-[#1A1715] p-6 rounded-xl shadow-lg flex space-x-4 border border-gray-800 hover:border-orange-500 transition duration-150 cursor-pointer">
-            <div class="flex-shrink-0">
-                <div class="w-16 h-16 rounded-full bg-red-600">
-                    </div>
-            </div>
-            
-            <div class="flex-grow">
-                <div class="text-xl font-semibold mb-1">
-                    Elena Rodriquez
+        {#each users as user}
+            <Link to="/profile/{user.id}" class="bg-[#1A1715] p-6 rounded-xl shadow-lg flex space-x-4 border border-gray-800 hover:border-orange-500 transition duration-150 cursor-pointer">
+                <div class="flex-shrink-0">
+                    <img 
+                        class="w-24 h-24 rounded-full bg-yellow-500 overflow-hidden"
+                        src={`${API_URL}${user.profile_pic_url}`}
+                        onerror={handleProfileImageError}
+                        alt={user.username} 
+                    />
                 </div>
-                <div class="flex items-center space-x-2 text-sm text-orange-400 mb-2">
-                    @elena_arts
-                </div>
-                <p class="text-gray-400 text-sm mb-3">
-                    Digital artist & illustrator based in Barcelona. Creating vibrant worlds on canvas.
-                </p>
-                <span class="text-gray-500 text-xs">
-                    3 posts
-                </span>
-            </div>
-        </div>
-
-        <Link to="/Profile" class="bg-[#1A1715] p-6 rounded-xl shadow-lg flex space-x-4 border border-gray-800 hover:border-orange-500 transition duration-150 cursor-pointer">
-            <div class="flex-shrink-0">
-                <div class="w-16 h-16 rounded-full bg-yellow-500">
-                    </div>
-            </div>
-            <div class="flex-grow">
-                <div class="text-xl font-semibold mb-1">
-                    Max Chen
-                </div>
-                <div class="flex items-center space-x-2 text-sm text-orange-400 mb-2">
-                    @max_creative
-                </div>
-                <p class="text-gray-400 text-sm mb-3">
-                    Photographer & visual storyteller. Capturing moments that matter.
-                </p>
-                <span class="text-gray-500 text-xs">
-                    3 posts
-                </span>
-            </div>
-        </Link>
-        
-        <div class="bg-[#1A1715] p-6 rounded-xl shadow-lg flex space-x-4 border border-gray-800 hover:border-orange-500 transition duration-150 cursor-pointer">
-            <div class="flex-shrink-0">
-                <div class="w-16 h-16 rounded-full bg-blue-500">
-                    </div>
-            </div>
-            <div class="flex-grow">
-                <div class="flex justify-between items-start">
+                
+                <div class="flex-grow">
                     <div class="text-xl font-semibold mb-1">
-                        Sarah Mitchell
+                        {user.username}
                     </div>
-                    <span class="text-xs bg-gray-600 text-gray-200 px-2 py-0.5 rounded-full font-medium flex-shrink-0">
-                        Admin
+                    <p class="text-gray-400 text-sm mb-3">
+                        {user.bio}
+                    </p>
+                    <span class="text-gray-500 text-xs">
+                        {user.post_count} posts
                     </span>
                 </div>
-                <div class="flex items-center space-x-2 text-sm text-orange-400 mb-2">
-                    @sarah_designs
-                </div>
-                <p class="text-gray-400 text-sm mb-3">
-                    UI/UX designer passionate about creating beautiful, functional interfaces.
-                </p>
-                <span class="text-gray-500 text-xs">
-                    2 posts
-                </span>
-            </div>
-        </div>
-
-        <div class="bg-[#1A1715] p-6 rounded-xl shadow-lg flex space-x-4 border border-gray-800 hover:border-orange-500 transition duration-150 cursor-pointer">
-            <div class="flex-shrink-0">
-                <div class="w-16 h-16 rounded-full bg-green-500">
-                    </div>
-            </div>
-            <div class="flex-grow">
-                <div class="text-xl font-semibold mb-1">
-                    Jordan Williams
-                </div>
-                <div class="flex items-center space-x-2 text-sm text-orange-400 mb-2">
-                    @jordan_3d
-                </div>
-                <p class="text-gray-400 text-sm mb-3">
-                    3D artist and animator. Building impossible worlds in digital space.
-                </p>
-                <span class="text-gray-500 text-xs">
-                    2 posts
-                </span>
-            </div>
-        </div>
-        
-        <div class="bg-[#1A1715] p-6 rounded-xl shadow-lg flex space-x-4 border border-gray-800 hover:border-orange-500 transition duration-150 cursor-pointer">
-            <div class="flex-shrink-0">
-                <div class="w-16 h-16 rounded-full bg-purple-500">
-                    </div>
-            </div>
-            <div class="flex-grow">
-                <div class="text-xl font-semibold mb-1">
-                    Maya Patel
-                </div>
-                <div class="flex items-center space-x-2 text-sm text-orange-400 mb-2">
-                    @maya_typography
-                </div>
-                <p class="text-gray-400 text-sm mb-3">
-                    Type designer & lettering artist. Words are my canvas.
-                </p>
-                <span class="text-gray-500 text-xs">
-                    2 posts
-                </span>
-            </div>
-        </div>
-
-        <div class="bg-[#1A1715] p-6 rounded-xl shadow-lg flex space-x-4 border border-gray-800 hover:border-orange-500 transition duration-150 cursor-pointer">
-            <div class="flex-shrink-0">
-                <div class="w-16 h-16 rounded-full bg-teal-500">
-                    </div>
-            </div>
-            <div class="flex-grow">
-                <div class="text-xl font-semibold mb-1">
-                    Kevin Li
-                </div>
-                <div class="flex items-center space-x-2 text-sm text-orange-400 mb-2">
-                    @kevin_uiux
-                </div>
-                <p class="text-gray-400 text-sm mb-3">
-                    Focused on crafting seamless user experiences and modern interfaces.
-                </p>
-                <span class="text-gray-500 text-xs">
-                    4 posts
-                </span>
-            </div>
-        </div>
-
+            </Link>
+        {/each}
     </div>
 
 </div>

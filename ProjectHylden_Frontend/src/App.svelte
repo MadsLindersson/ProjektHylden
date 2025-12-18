@@ -36,8 +36,8 @@
       <Creators />
     </Route>
 
-    <Route path="/profile/:id" let:params>
-      <Profile userId = {params.id}/>
+    <Route path="/profile/:userId" let:params>
+      <Profile userId = {params.userId}/>
     </Route>
     
     <Route path="/createpost">
