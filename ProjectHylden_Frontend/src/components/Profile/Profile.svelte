@@ -47,6 +47,7 @@
 
         posts = data.posts;
     }
+
     function onSelect (postFromPostCard)    {
         post = postFromPostCard;
         IsModalOpen = true;
@@ -82,7 +83,7 @@
             {:else}
                 <div class="w-24 h-24 rounded-full bg-gray-700 animate-pulse"></div>
             {/if}
-            
+
             {#if $authStore.isAuthenticated && $authStore.userId == userId}
                 <Link to="/editprofile/{$authStore.userId}">
                     <img src="/edit.svg" alt="" class="absolute bottom-0 right-0 p-1 bg-transparent rounded-full text-white shadow-lg h-7 cursor-pointer hover:bg-[#F5AE55] transition duration-150">
@@ -160,13 +161,13 @@
             </Link>
         {/if}
         
-        {#each posts as post}
-            <PostCard {post} {onSelect}/>
+        {#each posts as postItem}
+            <PostCard postItem = {postItem} onSelect = {onSelect}/>
         {/each}   
     </div>
 
     <!-- TODO: Make the modal show only when a specific post is clicked and send the post id instead of the user id to Post component -->
     {#if IsModalOpen}
-        <Post {post} {userId} {onclose}/>
+        <Post {post} {onclose}/>
     {/if}
 </div>

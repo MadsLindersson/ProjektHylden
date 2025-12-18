@@ -5,6 +5,23 @@ import db from '../database/connection.js';
 
 import { uploadProfilePicture } from '../utilBackend/multerConfig.js';
 
+router.get("/users", async (req, res) => {
+    try {
+        const users = await db.all(`SELECT 
+            id,
+            username,
+            profile_pic_url,
+            bio,
+            created_at
+            FROM users`);
+
+        res.send({ users: users });
+    } catch (error) {
+        console.error(err);
+        res.status(500).send({ error: "Database error" });
+    }
+});
+
 router.get("/users/:id", async (req, res) => {
     try {
         const id = req.params.id;

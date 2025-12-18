@@ -5,12 +5,15 @@
     import NavBar from "../NavBar";
     import CategoriesBar from '../CategoriesBar';
     import PostCard from '../PostCard/PostCard.svelte';
+  import Post from '../Post';
 
     let exclude = [];
 
-    let posts = [];
+    let posts = $state([]);
 
-    let categories = [];
+    let IsModalOpen = $state(false); 
+
+    let post = $state();
 
     async function handleGetPosts ()    {
         const response = await fetch("http://localhost:8080/posts/gallery/20", {
@@ -28,6 +31,15 @@
         for (let post of data.posts) {
             exclude.push(post.id);
         }
+    }
+
+    function onSelect (postFromPostCard)    {
+        post = postFromPostCard;
+        IsModalOpen = true;
+    }
+
+    function onclose () {
+        IsModalOpen = false;
     }
 
     onMount(() => {
@@ -84,8 +96,12 @@
     <CategoriesBar />
     
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {#each posts as post}
-            <PostCard post = {post}/>
+        {#each posts as postItem}
+            <PostCard postItem = {postItem} onSelect = {onSelect}/>
         {/each}   
     </div>
+
+    {#if IsModalOpen}
+        <Post {post} {onclose}/>
+    {/if}
 </div>

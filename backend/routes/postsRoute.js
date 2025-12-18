@@ -72,8 +72,7 @@ router.post("/posts/gallery/:amount", async (req, res) => {
                     FROM post_images 
                     WHERE post_images.post_id = posts.id 
                     ORDER BY order_index ASC 
-                    LIMIT 1
-                ) AS image_url
+                ) AS image_urls
             FROM posts
             JOIN users ON posts.user_id = users.id
             JOIN categories ON posts.category_id = categories.id 

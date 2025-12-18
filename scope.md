@@ -58,6 +58,9 @@ An admin also has en extra fan where they can administrate users of the page. Th
   - Delete user accounts
   - Change user roles
 
+- Socket
+  - A report system
+
 
 ## Technologies
 
