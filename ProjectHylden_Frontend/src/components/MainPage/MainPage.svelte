@@ -2,8 +2,6 @@
     import { Link } from 'svelte-routing';
     import { onMount } from 'svelte';
 
-
-
     import NavBar from "../NavBar";
     import CategoriesBar from '../CategoriesBar';
     import PostCard from '../PostCard/PostCard.svelte';

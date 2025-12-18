@@ -4,38 +4,53 @@ const router = Router();
 import db from '../database/connection.js';
 import { uploadPostPicture } from "../utilBackend/multerConfig.js";
 
-router.get("/posts/:id", async (req, res) => {
+router.get("/posts/profile/:userId", async (req, res) => {
     try {
-        const userId = req.params.id;
+        const userId = req.params.userId;
 
         const posts = await db.all(`
             SELECT 
                 posts.id, 
                 posts.title, 
                 posts.category_id, 
+                posts.description,
+                posts.created_at,
                 categories.name AS category_name,
                 posts.user_id, 
                 users.username,
+                users.profile_pic_url,
                 (
                     SELECT image_url 
                     FROM post_images 
                     WHERE post_images.post_id = posts.id 
                     ORDER BY order_index ASC 
-                    LIMIT 1
-                ) AS image_url
-            FROM posts posts
-            JOIN categories categories ON posts.category_id = categories.id
+                ) AS image_urls
+            FROM posts
+            JOIN categories ON posts.category_id = categories.id
             JOIN users ON posts.user_id = users.id
             WHERE posts.user_id = ?
             ORDER BY posts.id DESC;
         `, userId);
 
         res.send({ posts: posts });
-    } catch (err) {
-        console.error(err);
+    } catch (error) {
+        console.error(error);
         res.status(500).send({ error: "Database error" });
     }
 });
+
+router.get("/imageUrls/:postId", async (req, res) => {
+    try {
+        const postId = req.params.postId;
+
+        const imageUrls = await db.all(`SELECT * FROM post_images WHERE post_id = ?`, postId);
+
+        res.send({ imageUrls: imageUrls });
+    } catch (error)  {
+        console.error(error);
+        res.status(500).send({ error: "Database error" });
+    }
+})
 
 // Is a GET but has to be post so the frontend can send a list of id's to exclude, to avoid dublicates.
 router.post("/posts/gallery/:amount", async (req, res) => {
@@ -89,7 +104,7 @@ router.post("/posts/:id", uploadPostPicture.array('postImages'), async (req, res
         const {title, description, category} = req.body;
 
         const postResult = await db.run(`INSERT INTO posts (title, description, category_id, user_id, created_at)
-            VALUES (?, ?, ?, ?, DATETIME('now'))`, [title, description, category, userId]);
+            VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)`, [title, description, category, userId]);
 
         let postId = postResult.lastID 
     

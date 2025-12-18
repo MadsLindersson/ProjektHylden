@@ -3,6 +3,7 @@
     import { Link } from 'svelte-routing';
     import { authStore } from "../../utilFrontend/stores/authStore.js";
     import { API_URL } from "../../utilFrontend/constants.js";
+    import { handleProfileImageError } from "../../utilFrontend/imageErrors.js";
 
     import NavBar from "../NavBar";
     import CategoriesBar from "../CategoriesBar";
@@ -10,16 +11,18 @@
     import Post from "../Post/Post.svelte";
 
 
-    export let id;
+    let { userId } = $props();
 
-    export let postModal = "true";
+    let IsModalOpen = $state(false); 
 
-    let user = {};
+    let post = $state();
 
-    let posts = [];
+    let user = $state({username: "", bio: "", profile_pic_url: "", created_at: null, });
+
+    let posts = $state([]);
 
     async function handleGetUser ()    {
-        const response = await fetch(`http://localhost:8080/users/${id}`, {
+        const response = await fetch(`http://localhost:8080/users/${userId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -33,7 +36,7 @@
     }
 
         async function handleGetPosts ()    {
-        const response = await fetch(`http://localhost:8080/posts/${id}`, {
+        const response = await fetch(`http://localhost:8080/posts/profile/${userId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -44,23 +47,21 @@
 
         posts = data.posts;
     }
+    function onSelect (postFromPostCard)    {
+        post = postFromPostCard;
+        IsModalOpen = true;
+    }
 
-    function handleProfileImageError(event) {
-        const img = event.currentTarget;
-        if (img instanceof HTMLImageElement) {
-            img.src = "/defaultProfile.png";
+    function onclose () {
+        IsModalOpen = false;
+    }
+
+    $effect(() => {
+        if (userId) {
+            handleGetUser();
+            handleGetPosts();
         }
-    }
-
-    onMount(() => {
-        handleGetUser();
-        handleGetPosts();
-    });
-
-    $: if (id) {
-        handleGetUser();
-        handleGetPosts();
-    }
+    }); 
     
 </script>
 
@@ -71,13 +72,18 @@
     <header class="mb-10 flex items-start space-x-6">
         
         <div class="flex-shrink-0 relative"> 
-            <img
-                src={`${API_URL}${user.profile_pic_url}`}
-                on:error={handleProfileImageError}
-                alt="No profile pic" 
-                class="w-24 h-24 rounded-full bg-yellow-500 overflow-hidden"
-            />
-            {#if $authStore.isAuthenticated && $authStore.userId == id}
+            {#if user.profile_pic_url}
+                <img
+                    src={`${API_URL}${user.profile_pic_url}`}
+                    onerror={handleProfileImageError}
+                    alt={user.username} 
+                    class="w-24 h-24 rounded-full bg-yellow-500 overflow-hidden"
+                />
+            {:else}
+                <div class="w-24 h-24 rounded-full bg-gray-700 animate-pulse"></div>
+            {/if}
+            
+            {#if $authStore.isAuthenticated && $authStore.userId == userId}
                 <Link to="/editprofile/{$authStore.userId}">
                     <img src="/edit.svg" alt="" class="absolute bottom-0 right-0 p-1 bg-transparent rounded-full text-white shadow-lg h-7 cursor-pointer hover:bg-[#F5AE55] transition duration-150">
                 </Link>
@@ -93,7 +99,7 @@
                 <p class="text-xl text-gray-300 max-w-3xl">
                     {user.bio}
                 </p>
-                {#if $authStore.isAuthenticated && $authStore.userId == id}
+                {#if $authStore.isAuthenticated && $authStore.userId == userId}
                     <Link to="/editprofile/{$authStore.userId}">
                         <img src="/edit.svg" alt="" class="p-1 bg-transparent rounded-full text-white shadow-lg h-7 cursor-pointer hover:bg-[#F5AE55] transition duration-150">
                     </Link>
@@ -143,7 +149,7 @@
     <CategoriesBar />
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {#if $authStore.isAuthenticated && $authStore.userId == id}
+        {#if $authStore.isAuthenticated && $authStore.userId == userId}
             <Link to="/createpost" class="bg-gray-800 rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition duration-300 cursor-pointer border border-gray-800 hover:bg-gray-700 hover:border-[#F5AE55] hover:shadow-lg">
                 <div class="relative flex items-center justify-center">
                     <img
@@ -155,12 +161,12 @@
         {/if}
         
         {#each posts as post}
-            <PostCard post = {post}/>
+            <PostCard {post} {onSelect}/>
         {/each}   
     </div>
 
     <!-- TODO: Make the modal show only when a specific post is clicked and send the post id instead of the user id to Post component -->
-    {#if postModal === "true"}
-        <Post userId = {id}/>
+    {#if IsModalOpen}
+        <Post {post} {userId} {onclose}/>
     {/if}
 </div>

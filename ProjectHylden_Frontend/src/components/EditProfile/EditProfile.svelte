@@ -4,7 +4,7 @@
     import { onMount } from "svelte";
     import { profileUpdated } from "../../utilFrontend/toastr.js";
 
-    export let id;
+    export let userId;
     
     let bio;
 
@@ -13,7 +13,7 @@
     let files;
 
     async function handleGetUser () {
-        const response = await fetch(`http://localhost:8080/users/${id}`, {
+        const response = await fetch(`http://localhost:8080/users/${userId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -38,7 +38,7 @@
         };
 
         try {
-            const response = await fetch(`http://localhost:8080/users/${id}`, {
+            const response = await fetch(`http://localhost:8080/users/${userId}`, {
                 method: "PATCH",
                 body: formData
             });        

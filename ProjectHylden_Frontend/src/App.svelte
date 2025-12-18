@@ -37,15 +37,15 @@
     </Route>
 
     <Route path="/profile/:id" let:params>
-      <Profile id = {params.id}/>
+      <Profile userId = {params.id}/>
     </Route>
     
     <Route path="/createpost">
       <CreatePost />
     </Route>
 
-    <Route path="/editprofile/:id" let:params>
-      <EditProfile id = {params.id}/>
+    <Route path="/editprofile/:userId" let:params>
+      <EditProfile userId = {params.userId}/>
     </Route>
 
   </Router>
