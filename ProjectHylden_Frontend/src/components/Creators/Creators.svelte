@@ -4,8 +4,6 @@
     import { handleProfileImageError } from '../../utilFrontend/imageErrors.js';
 
     import NavBar from "../NavBar";
-    
-    
 
     let users = $state();
 

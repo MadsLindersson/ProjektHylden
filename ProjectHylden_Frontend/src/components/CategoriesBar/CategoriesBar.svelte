@@ -1,30 +1,13 @@
 <script>
-    import { onMount } from "svelte";
+  import { handleGetCategories } from "../../utilFrontend/FetchCategories.js";
 
-    let categories = [];
+    let categories = $state([]);
 
-    let chosenCategory = "all";
-
-    async function handleGetCategories ()   {
-        const response = await fetch("http://localhost:8080/categories", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
+    $effect(() => {
+        handleGetCategories().then(data => {
+            categories = data;
         });
-
-        const data = await response.json();
-        
-        categories = data.categories;
-    }
-
-    function selectCategory (categoryId)  {
-        chosenCategory = categoryId;
-    }
-
-    onMount(() => {
-        handleGetCategories();
-    })
+    });
 </script>
 
 <div class="flex space-x-3 overflow-x-auto pb-4 mb-12">

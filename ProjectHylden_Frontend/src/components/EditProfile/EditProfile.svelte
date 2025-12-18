@@ -4,13 +4,11 @@
     import { onMount } from "svelte";
     import { profileUpdated } from "../../utilFrontend/toastr.js";
 
-    export let userId;
+    let { userId } = $props();
     
-    let bio;
-
-    let user;
-
-    let files;
+    let bio = $state();
+    let user = $state();
+    let files = $state();
 
     async function handleGetUser () {
         const response = await fetch(`http://localhost:8080/users/${userId}`, {
@@ -54,15 +52,17 @@
         }
     }
 
-    onMount(() => {
+    $effect(() => {
         handleGetUser();
     });
 
-    let previewUrl;
+    let previewUrl = $state();
 
-    $: if (files && files[0]) {
-        previewUrl = URL.createObjectURL(files[0]);
-    }
+    $effect(() => {
+        if (files && files[0]) {
+            previewUrl = URL.createObjectURL(files[0]);
+        }
+    });
 </script>
 
 <div class="flex h-screen items-center justify-center">

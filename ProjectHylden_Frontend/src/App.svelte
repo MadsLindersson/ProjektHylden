@@ -1,7 +1,5 @@
 <script>
   import { Router, Route } from 'svelte-routing';
-  import { onMount } from 'svelte';
-
   import { checkAuthStatus } from './utilFrontend/stores/authStore.js';
 
   import MainPage from './components/MainPage'
@@ -12,8 +10,9 @@
   import CreatePost from './components/CreatePost';
   import EditProfile from './components/EditProfile';
 
-
-  onMount(checkAuthStatus);
+  $effect(() => {
+    checkAuthStatus();
+  });
 
 </script>
 

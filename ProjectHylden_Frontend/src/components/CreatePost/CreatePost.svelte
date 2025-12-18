@@ -1,14 +1,14 @@
 <script>
     import { Link, navigate } from "svelte-routing";
     import { authStore } from "../../utilFrontend/stores/authStore.js";
-    import { onMount } from "svelte";
     import { postCreated } from "../../utilFrontend/toastr.js";
-  import { API_URL } from "../../utilFrontend/constants.js";
+    import { API_URL } from "../../utilFrontend/constants.js";
+    import { handleGetCategories } from "../../utilFrontend/FetchCategories.js";
 
-    let title = "";
-    let description = "";
-    let category;
-    let files;
+    let title = $state("");
+    let description = $state("");
+    let category = $state();
+    let files = $state();
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -42,23 +42,12 @@
         }
     }
 
-    let categories = [];
+    let categories = $state([]);
 
-    async function handleGetCategories ()   {
-        const response = await fetch("http://localhost:8080/categories", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
+    $effect(() => {
+        handleGetCategories().then(data => {
+            categories = data;
         });
-
-        const data = await response.json();
-        
-        categories = data.categories;
-    }
-
-    onMount(() => {
-        handleGetCategories();
     });
 </script>
 

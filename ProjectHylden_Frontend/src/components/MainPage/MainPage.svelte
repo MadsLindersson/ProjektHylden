@@ -1,11 +1,9 @@
 <script>
-    import { Link } from 'svelte-routing';
-    import { onMount } from 'svelte';
-
+    //TODO: update this and other components below in the files to svelte 5!
     import NavBar from "../NavBar";
     import CategoriesBar from '../CategoriesBar';
-    import PostCard from '../PostCard/PostCard.svelte';
-  import Post from '../Post';
+    import PostCard from '../PostCard';
+    import Post from '../Post';
 
     let exclude = [];
 
@@ -42,9 +40,9 @@
         IsModalOpen = false;
     }
 
-    onMount(() => {
+    $effect(() => {
         handleGetPosts();
-    })
+    });
 
 </script>
 <NavBar />
