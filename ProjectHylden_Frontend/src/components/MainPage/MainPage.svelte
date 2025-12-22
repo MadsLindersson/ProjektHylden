@@ -1,5 +1,4 @@
 <script>
-    //TODO: update this and other components below in the files to svelte 5!
     import NavBar from "../NavBar";
     import CategoriesBar from '../CategoriesBar';
     import PostCard from '../PostCard';
@@ -12,6 +11,21 @@
     let IsModalOpen = $state(false); 
 
     let post = $state();
+
+    let chosenCategory = $state("all");
+
+    let searchQuery = $state("");
+
+    let filteredPosts = $derived(
+        posts.filter(post => {
+            const matchesCategory = chosenCategory === "all" || post.category_name === chosenCategory;
+
+            const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                 post.description?.toLowerCase().includes(searchQuery.toLowerCase());
+
+            return matchesCategory && matchesSearch;
+        })
+    );
 
     async function handleGetPosts ()    {
         const response = await fetch("http://localhost:8080/posts/gallery/20", {
@@ -38,6 +52,10 @@
 
     function onclose () {
         IsModalOpen = false;
+    }
+
+    function handleChoseCategory (category)  {
+        chosenCategory = category;
     }
 
     $effect(() => {
@@ -67,10 +85,17 @@
         <h2 class="text-3xl font-bold text-white">
             Discover Creations
         </h2>
-        
-        <div class="flex items-center space-x-2 p-2 rounded-lg bg-[#1A1715] text-white cursor-pointer">
-            <span>
-                <svg 
+
+    <div class="flex-grow flex justify-center mx-10">
+        <div class="relative hidden sm:block">
+          <input
+          bind:value={searchQuery}
+            type="text"
+            placeholder="Search..."
+            class="w-96 bg-[#1A1715] text-gray-400 placeholder-gray-500 rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
+          >
+          <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+            <svg 
                 xmlns="http://www.w3.org/2000/svg" 
                 viewBox="0 0 24 24" 
                 fill="none" 
@@ -80,22 +105,19 @@
                 stroke-linejoin="round"
                 class="w-5 h-5"
                 >
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                </svg>
-            </span>
-            <span class="font-medium">Latest</span>
-            <span>&#x25BC;</span>
+                <circle cx="11" cy="11" r="8"></circle> 
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
         </div>
+      </div>
     </div>
 
-    <CategoriesBar />
+    <CategoriesBar {chosenCategory} {handleChoseCategory}/>
     
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {#each posts as postItem}
-            <PostCard postItem = {postItem} onSelect = {onSelect}/>
+        {#each filteredPosts as postItem (postItem.id)}
+            <PostCard {postItem} {onSelect} />
         {/each}   
     </div>
 

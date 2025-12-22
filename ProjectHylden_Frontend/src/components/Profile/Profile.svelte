@@ -1,5 +1,4 @@
 <script>
-    import { onMount } from "svelte";
     import { Link } from 'svelte-routing';
     import { authStore } from "../../utilFrontend/stores/authStore.js";
     import { API_URL } from "../../utilFrontend/constants.js";
@@ -20,6 +19,21 @@
     let user = $state({username: "", bio: "", profile_pic_url: "", created_at: null, });
 
     let posts = $state([]);
+
+    let chosenCategory = $state("all");
+
+    let searchQuery = $state("");
+
+    let filteredPosts = $derived(
+        posts.filter(post => {
+            const matchesCategory = chosenCategory === "all" || post.category_name === chosenCategory;
+
+            const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                 post.description?.toLowerCase().includes(searchQuery.toLowerCase());
+
+            return matchesCategory && matchesSearch;
+        })
+    );
 
     async function handleGetUser ()    {
         const response = await fetch(`http://localhost:8080/users/${userId}`, {
@@ -46,6 +60,10 @@
         const data = await response.json();
 
         posts = data.posts;
+    }
+
+    function handleChoseCategory (category)  {
+        chosenCategory = category;
     }
 
     function onSelect (postFromPostCard)    {
@@ -133,21 +151,34 @@
             Works
         </h2>
         
-        <div class="flex items-center space-x-2 p-2 rounded-lg bg-[#1A1715] text-white cursor-pointer">
-            <span>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                </svg>
-            </span>
-            <span class="font-medium">Latest</span>
-            <span>&#x25BC;</span>
+    <div class="flex-grow flex justify-center mx-10">
+        <div class="relative hidden sm:block">
+          <input
+          bind:value={searchQuery}
+            type="text"
+            placeholder="Search..."
+            class="w-96 bg-[#1A1715] text-gray-400 placeholder-gray-500 rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
+          >
+          <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+            <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                stroke-width="2" 
+                stroke-linecap="round" 
+                stroke-linejoin="round"
+                class="w-5 h-5"
+                >
+                <circle cx="11" cy="11" r="8"></circle> 
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
         </div>
+      </div>
     </div>
 
-    <CategoriesBar />
+    <CategoriesBar {chosenCategory} {handleChoseCategory}/>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {#if $authStore.isAuthenticated && $authStore.userId == userId}
@@ -161,12 +192,11 @@
             </Link>
         {/if}
         
-        {#each posts as postItem}
+        {#each filteredPosts as postItem}
             <PostCard postItem = {postItem} onSelect = {onSelect}/>
         {/each}   
     </div>
 
-    <!-- TODO: Make the modal show only when a specific post is clicked and send the post id instead of the user id to Post component -->
     {#if IsModalOpen}
         <Post {post} {onclose}/>
     {/if}

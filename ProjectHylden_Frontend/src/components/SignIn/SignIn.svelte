@@ -3,8 +3,8 @@
     import { signInNotification, somethingWentWrong } from '../../utilFrontend/toastr.js';
     import { login } from '../../utilFrontend/stores/authStore.js';
 
-    let email = "";
-    let password = "";
+    let email = $state("");
+    let password = $state("");
 
     async function handleSubmit (event)  {
         event.preventDefault();

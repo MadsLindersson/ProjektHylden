@@ -9,6 +9,7 @@
   import Profile from './components/Profile';
   import CreatePost from './components/CreatePost';
   import EditProfile from './components/EditProfile';
+  import ProtectedRoute from './components/ProtectedRoute';
 
   $effect(() => {
     checkAuthStatus();
@@ -40,11 +41,15 @@
     </Route>
     
     <Route path="/createpost">
-      <CreatePost />
+      <ProtectedRoute>
+        <CreatePost />
+      </ProtectedRoute>
     </Route>
 
     <Route path="/editprofile/:userId" let:params>
-      <EditProfile userId = {params.userId}/>
+      <ProtectedRoute>
+        <EditProfile userId = {params.userId}/>
+      </ProtectedRoute>
     </Route>
 
   </Router>

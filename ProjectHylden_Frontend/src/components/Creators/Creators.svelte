@@ -5,13 +5,23 @@
 
     import NavBar from "../NavBar";
 
-    let users = $state();
+    let users = $state([]);
+
+    let searchQuery = $state("");
+
+    let filteredUsers = $derived(
+        users.filter(user => {
+            const matchesSearch = user.username.toLowerCase().includes(searchQuery.toLowerCase());
+
+            return matchesSearch;
+        })
+    );
 
     async function handleGetUsers ()    {
         const response = await fetch(`${API_URL}/users`, {
             method: "GET",
             headers: {
-                "Content-Type": "appliction/json"
+                "Content-Type": "application/json"
             }
         });
 
@@ -41,6 +51,7 @@
     <div class="mb-12">
         <div class="relative max-w-md">
             <input
+                bind:value={searchQuery}
                 type="text"
                 placeholder="Search creators..."
                 class="w-full bg-[#1A1715] text-gray-400 placeholder-gray-500 rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-gray-700"
@@ -64,7 +75,7 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {#each users as user}
+        {#each filteredUsers as user}
             <Link to="/profile/{user.id}" class="bg-[#1A1715] p-6 rounded-xl shadow-lg flex space-x-4 border border-gray-800 hover:border-orange-500 transition duration-150 cursor-pointer">
                 <div class="flex-shrink-0">
                     <img 

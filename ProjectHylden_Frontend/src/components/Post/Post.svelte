@@ -142,7 +142,6 @@
 </div>
 
 <style>
-    /* Keeps the fixed size tidy with custom scrollbars */
     .custom-scrollbar::-webkit-scrollbar { width: 5px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #332A26; border-radius: 10px; }

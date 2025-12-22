@@ -2,10 +2,10 @@
     import { Link, navigate } from 'svelte-routing';
     import { accountCreated, pwNotAMatch, somethingWentWrong, emailOrUsernameExists } from '../../utilFrontend/toastr.js';
 
-    let username = "";
-    let email = "";
-    let password = "";
-    let confirmPassword = "";
+    let username = $state("");
+    let email = $state("");
+    let password = $state("");
+    let confirmPassword = $state("");
 
     async function handleSubmit (event)  {
         event.preventDefault();

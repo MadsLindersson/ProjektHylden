@@ -3,7 +3,7 @@
     import { authStore } from "../../utilFrontend/stores/authStore.js";
     import { postCreated } from "../../utilFrontend/toastr.js";
     import { API_URL } from "../../utilFrontend/constants.js";
-    import { handleGetCategories } from "../../utilFrontend/FetchCategories.js";
+    import { handleGetCategories } from "../../utilFrontend/categories.js";
 
     let title = $state("");
     let description = $state("");
