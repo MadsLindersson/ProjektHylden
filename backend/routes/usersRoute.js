@@ -2,8 +2,8 @@ import { Router } from 'express';
 const router = Router();
 
 import db from '../database/connection.js';
-
 import { uploadProfilePicture } from '../utilBackend/multerConfig.js';
+import { adminCheck } from '../utilBackend/adminCheck.js';
 
 router.get("/users", async (req, res) => {
     try {
@@ -44,7 +44,7 @@ router.get("/users/:id", async (req, res) => {
     }
 });
 
-router.patch("/users/:id", uploadProfilePicture.single('profilePic') ,async (req, res) => {
+router.patch("/users/:id", uploadProfilePicture.single('profilePic'), async (req, res) => {
     try {
         const bio = req.body.bio;
         const id = req.params.id;
@@ -63,8 +63,26 @@ router.patch("/users/:id", uploadProfilePicture.single('profilePic') ,async (req
         } else {
             res.status(500).send({ data: "Something went wrong" });
         }
-    } catch (err)   {
-        console.error(err);
+    } catch (error)   {
+        console.error(error);
+        res.status(500).send({ error: "Database error" });
+    }
+});
+
+router.patch("/users/:id/role", adminCheck, async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const userRole = req.body.userRole;
+
+        const result = await db.run(`UPDATE users SET role = ? WHERE id = ?`, userRole, userId);
+
+        if (result.changes !== 0)   {
+            res.status(200).send({ data: "User updated" });
+        } else  {
+            res.status(500).send({ data: "Something went wrong" });
+        }
+    } catch (error) {
+        console.error(error);
         res.status(500).send({ error: "Database error" });
     }
 });

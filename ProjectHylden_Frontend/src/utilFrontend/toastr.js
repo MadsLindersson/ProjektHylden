@@ -38,9 +38,17 @@ export function accountCreated (hasCreated)  {
 
 export function profileUpdated (hasCreated)  {
     if (hasCreated) {
-      toastr.success("Profile Updated!");
+      toastr.success("Profile updated!");
   } else {
-      toastr.error("Profile Updateding failed");
+      toastr.error("Profile updating failed");
+  }
+}
+
+export function userUpdated (hasCreated)  {
+    if (hasCreated) {
+      toastr.success("User updated!");
+  } else {
+      toastr.error("User Updating failed");
   }
 }
 

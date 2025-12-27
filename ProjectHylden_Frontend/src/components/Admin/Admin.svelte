@@ -1,7 +1,7 @@
 <script>
     import { API_URL } from "../../utilFrontend/constants.js";
     import { handleProfileImageError } from "../../utilFrontend/imageErrors.js";
-    import { authStore } from "../../utilFrontend/stores/authStore.js";
+  import { userUpdated } from "../../utilFrontend/toastr.js";
 
     import NavBar from "../NavBar/NavBar.svelte";
 
@@ -18,6 +18,30 @@
         const data = await response.json();
 
         users = data.users;
+    }
+
+    async function handleUpdateUserRole (userId, userRole)  {
+        const response = await fetch(`${API_URL}/users/${userId}/role`, {
+            method: "PATCH",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({userRole: userRole})
+        });
+
+        const data = await response.json();
+
+        if (response.ok)    {
+            userUpdated(true);
+            const user = users.find(u => u.id === userId);
+
+            if (user) {
+                user.role = userRole;
+            }
+        } else  {
+            userUpdated(false);
+        }
     }
 
     $effect(() => {
@@ -97,6 +121,7 @@
                             <select
                                 id="user-role" 
                                 value={user.role}
+                                onchange={(e) => handleUpdateUserRole(user.id, e.target.value)}
                                 class="bg-[#0B0A09] border border-gray-800 text-sm text-gray-300 rounded-lg px-3 py-2 outline-none focus:border-orange-500 transition cursor-pointer"
                             >
                                 <option value="creator">Creator</option>

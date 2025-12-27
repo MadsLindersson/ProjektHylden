@@ -2,9 +2,7 @@ import Router from 'express';
 const router = Router();
 
 import hashing from '../utilBackend/hashing.js';
-
 import db from '../database/connection.js';
-
 import { signIn } from '../utilBackend/signIn.js';
 
 // Endpoints =====================================================================================
