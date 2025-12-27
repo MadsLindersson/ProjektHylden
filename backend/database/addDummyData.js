@@ -22,10 +22,10 @@ db.exec(`
     ----------------------------------------------------------------------
     INSERT INTO users (username, email, password, profile_pic_url, bio, role)
     VALUES
-    ('maxchen', 'max@example.com', 'password123', 'https://i.pravatar.cc/150?img=1', 'Photography enthusiast', 'user'),
-    ('emilyjones', 'emily@example.com', 'password123', 'https://i.pravatar.cc/150?img=2', 'Digital artist', 'user'),
-    ('lucasbrown', 'lucas@example.com', 'password123', 'https://i.pravatar.cc/150?img=3', 'Graphic designer', 'user'),
-    ('admin', 'admin@example.com', 'adminpass', 'https://i.pravatar.cc/150?img=4', 'Site administrator', 'admin');
+    ('maxchen', 'max@example.com', 'password123', 'https://i.pravatar.cc/150?img=1', 'Photography enthusiast', 'creator'),
+    ('emilyjones', 'emily@example.com', 'password123', 'https://i.pravatar.cc/150?img=2', 'Digital artist', 'creator'),
+    ('lucasbrown', 'lucas@example.com', 'password123', 'https://i.pravatar.cc/150?img=3', 'Graphic designer', 'creator'),
+    ('admin', 'admin@example.com', '$2b$14$724q9dZy43S35syp7pMAHeNPRer9V9DGEIAptp9NXS/5WB83HO4WC', 'https://i.pravatar.cc/150?img=4', 'Site administrator', 'admin');
 
     ----------------------------------------------------------------------
     -- POSTS (UPDATED: Using subqueries to get category_id)

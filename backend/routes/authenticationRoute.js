@@ -11,19 +11,20 @@ import { signIn } from '../utilBackend/signIn.js';
 
 router.get("/status", (req, res) => {
     if (req.session.userId) {
-        return res.status(200).json({ 
+        return res.status(200).send({ 
             isAuthenticated: true,
-            userId: req.session.userId
+            userId: req.session.userId,
+            userRole: req.session.userRole
         });
     }
 
-    return res.status(200).json({ 
+    return res.status(200).send({ 
         isAuthenticated: false
     });
 });
 
 router.post("/auth/signIn", signIn, (req, res) => {    
-    res.send({ userId: req.session.userId });
+    res.send({ userId: req.session.userId, userRole: req.session.userRole });
 });
 
 router.post("/signUp", async (req, res) => {

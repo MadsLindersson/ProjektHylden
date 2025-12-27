@@ -8,7 +8,7 @@ db.exec(`
         password TEXT NOT NULL,
         profile_pic_url TEXT,
         bio TEXT,
-        role TEXT NOT NULL DEFAULT 'user',
+        role TEXT NOT NULL DEFAULT 'creator',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 

@@ -8,10 +8,11 @@ const initialUser = {
 
 export const authStore = writable(initialUser);
 
-export const login = (userId) => {
+export const login = (userId, userRole) => {
     authStore.set({
         isAuthenticated: true,
         userId: userId,
+        userRole: userRole,
         statusChecked: true,
     });
 };
@@ -25,7 +26,7 @@ export async function checkAuthStatus() {
         const data = await response.json();
 
         if (data.isAuthenticated) {
-            login(data.userId);
+            login(data.userId, data.userRole);
         } else {
             authStore.update(state => ({
                 ...state,

@@ -13,6 +13,8 @@ router.get("/users", async (req, res) => {
             users.username, 
             users.bio,
             users.profile_pic_url,
+            users.created_at,
+            users.role,
             COUNT(posts.id) AS post_count
             FROM users
             LEFT JOIN posts ON users.id = posts.user_id

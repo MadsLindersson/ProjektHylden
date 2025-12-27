@@ -13,6 +13,7 @@ export async function signIn (req, res, next)   {
 
         if (await hashing.comparePasswords(password, user.password)) {
             req.session.userId = user.id;
+            req.session.userRole = user.role;
             return next();
         } else {
             res.status(401).send({ data: "signIn information is incorrect, please try again" });

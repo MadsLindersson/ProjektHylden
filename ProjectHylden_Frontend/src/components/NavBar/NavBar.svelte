@@ -1,5 +1,5 @@
 <script>
-   import { Link } from 'svelte-routing';
+   import { Link, navigate } from 'svelte-routing';
    import { authStore, clientLogout } from '../../utilFrontend/stores/authStore.js';
    import { signOutNotification } from '../../utilFrontend/toastr.js';
 
@@ -12,7 +12,7 @@
       if (response.ok)  {
         clientLogout();
         signOutNotification(true);
-        window.location.reload;
+        navigate("/");
       } else  {
         signOutNotification(false);
         console.log("Something went wrong on the server");
@@ -36,6 +36,11 @@
       </Link>
       
       <div class="flex items-center space-x-6">
+          {#if $authStore.userRole === "admin"}
+            <Link to="/admin" class="text-gray-300 hover:text-white transition duration-150">
+              Admin
+          </Link>
+          {/if}
           <Link to="/" class="text-gray-300 hover:text-white transition duration-150">
             Explore
           </Link>

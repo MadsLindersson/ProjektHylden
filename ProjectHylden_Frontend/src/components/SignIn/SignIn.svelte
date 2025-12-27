@@ -26,7 +26,7 @@
             const data = await response.json();
 
             if (response.ok)   {
-                login(data.userId);
+                login(data.userId, data.userRole);
                 signInNotification(true);
                 navigate("/");
             } else  {

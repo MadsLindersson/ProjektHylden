@@ -10,6 +10,8 @@
   import CreatePost from './components/CreatePost';
   import EditProfile from './components/EditProfile';
   import ProtectedRoute from './components/ProtectedRoute';
+  import Admin from './components/Admin/Admin.svelte';
+  import ProtectedAdminRoute from './components/ProtectedAdminRoute/ProtectedAdminRoute.svelte';
 
   $effect(() => {
     checkAuthStatus();
@@ -50,6 +52,12 @@
       <ProtectedRoute>
         <EditProfile userId = {params.userId}/>
       </ProtectedRoute>
+    </Route>
+    
+    <Route path="/admin">
+      <ProtectedAdminRoute>      
+        <Admin />
+      </ProtectedAdminRoute>
     </Route>
 
   </Router>
