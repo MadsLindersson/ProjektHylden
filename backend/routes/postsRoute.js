@@ -3,6 +3,7 @@ const router = Router();
 
 import db from '../database/connection.js';
 import { uploadPostPicture } from "../utilBackend/multerConfig.js";
+import { adminCheck } from "../utilBackend/adminCheck.js";
 
 router.get("/posts/:userId", async (req, res) => {
     try {
@@ -20,7 +21,7 @@ router.get("/posts/:userId", async (req, res) => {
                 users.username,
                 users.profile_pic_url,
                 (
-                    SELECT image_url 
+                    SELECT image_url
                     FROM post_images 
                     WHERE post_images.post_id = posts.id 
                     ORDER BY order_index ASC 
@@ -69,7 +70,8 @@ router.post("/posts/gallery/:amount", async (req, res) => {
             users.username,
             users.profile_pic_url,
                 (
-                    SELECT image_url 
+                    SELECT 
+                    image_url
                     FROM post_images 
                     WHERE post_images.post_id = posts.id 
                     ORDER BY order_index ASC 
@@ -129,7 +131,7 @@ router.post("/posts/:userId", uploadPostPicture.array('postImages'), async (req,
     }
 });
 
-router.delete("/posts/:postId", async (req, res) => {
+router.delete("/posts/:postId", adminCheck, async (req, res) => {
     try {
         const postId = req.params.postId;
 
@@ -138,6 +140,23 @@ router.delete("/posts/:postId", async (req, res) => {
 
         if (postResult.changes !== 0 && postImgResult.changes !== 0)   {
             res.status(200).send({ data: "Post deleted" });
+        } else {
+            res.status(500).send({ data: "Something went wrong" });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: "Database error" });
+    }
+});
+
+router.delete("/images/:imageId", adminCheck, async (req, res) => {
+    try {
+        const imageId = req.params.imageId;
+
+        const result = await db.run("DELETE FROM post_images WHERE id = ?", imageId);
+
+        if (result.changes !== 0)   {
+            res.status(200).send({ data: "Image deleted" });
         } else {
             res.status(500).send({ data: "Something went wrong" });
         }

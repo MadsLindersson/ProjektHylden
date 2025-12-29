@@ -68,6 +68,14 @@ export function postDeleted (hasDeleted)  {
   }
 }
 
+export function imageDeleted (hasDeleted)  {
+    if (hasDeleted) {
+      toastr.success("Image deleted!");
+  } else {
+      toastr.error("Image deletion failed");
+  }
+}
+
 export function postCreated (hasCreated)  {
     if (hasCreated) {
       toastr.success("Post created!");

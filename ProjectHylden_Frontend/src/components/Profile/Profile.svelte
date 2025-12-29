@@ -62,6 +62,10 @@
         posts = data.posts;
     }
 
+    function onDelete (deletedId)    {
+        posts = posts.filter(post => post.id !== deletedId);
+    }
+
     function handleChoseCategory (category)  {
         chosenCategory = category;
     }
@@ -198,6 +202,6 @@
     </div>
 
     {#if IsModalOpen}
-        <Post {post} {onclose}/>
+        <Post {post} {onclose} {onDelete}/>
     {/if}
 </div>

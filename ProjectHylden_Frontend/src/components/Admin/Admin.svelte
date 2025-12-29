@@ -86,13 +86,7 @@
     <aside class="w-64 border-r border-gray-800 p-6 hidden md:block">
         <nav class="space-y-2">
             <div class="px-4 py-3 rounded-lg bg-gradient-to-r from-[#EB7548] to-[#F5AE55] text-black font-semibold cursor-pointer">
-                User Management
-            </div>
-            <div class="px-4 py-3 rounded-lg text-gray-400 hover:bg-[#1A1715] hover:text-white transition cursor-pointer">
-                Post Moderation
-            </div>
-            <div class="px-4 py-3 rounded-lg text-gray-400 hover:bg-[#1A1715] hover:text-white transition cursor-pointer">
-                Analytics
+                Creator Management
             </div>
         </nav>
     </aside>
@@ -100,8 +94,8 @@
     <main class="flex-grow p-8 md:p-12">
         <header class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
             <div class="space-y-2">
-                <h1 class="text-4xl font-bold tracking-tight">Community Management</h1>
-                <p class="text-gray-400">View members, adjust permissions, or remove accounts.</p>
+                <h1 class="text-4xl font-bold tracking-tight">Creator Management</h1>
+                <p class="text-gray-400">View members, adjust roles, or remove accounts.</p>
             </div>
 
             <div class="relative w-full max-w-sm">

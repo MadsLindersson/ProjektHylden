@@ -2,7 +2,7 @@
     import { API_URL } from "../../utilFrontend/constants.js";
     import { handlePostImageError, handleProfileImageError } from "../../utilFrontend/imageErrors.js";
     import { authStore } from "../../utilFrontend/stores/authStore.js";
-    import { postDeleted } from "../../utilFrontend/toastr.js";
+    import { imageDeleted, postDeleted } from "../../utilFrontend/toastr.js";
 
     let { post, onclose, onDelete } = $props();
 
@@ -40,6 +40,23 @@
             onDelete(post.id);
         } else  {
             postDeleted(false);
+        }
+    }
+
+    async function handleDeleteImage (imageId)  {
+        const response = await fetch(`${API_URL}/images/${imageId}`, {
+            method: "DELETE",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (response.ok)    {
+            imageDeleted(true);
+            images = images.filter(img => img.id !== imageId);
+        } else  {
+            imageDeleted(false);
         }
     }
 
@@ -97,7 +114,7 @@
                         </button>
                         {#if $authStore.userRole === "admin"}
                             <button 
-                                onclick={() => {/* Logic to delete img.id */}}
+                                onclick={() => {handleDeleteImage(img.id)}}
                                 class="absolute top-2 right-2 p-1.5 bg-red-500/80 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 cursor-pointer shadow-lg"
                                 aria-label="Delete this image"
                             >
@@ -178,6 +195,25 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                             {new Date(post.created_at).toLocaleDateString("da-DK", { month: "long", year: "numeric" })}
                         </div>
+                        {#if $authStore.isAuthenticated}
+                            <button 
+                                onclick={() => {/* Handle Like Logic */}}
+                                class="group flex items-center gap-1.5 transition-all duration-200 cursor-pointer"
+                            >
+                                <svg 
+                                    class="w-6 h-6 text-gray-500 group-hover:text-red-500 group-hover:scale-110 transition-all duration-200" 
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                                
+                                <span class="text-xs font-bold text-gray-500">
+                                    {post.likes_count || 0}
+                                </span>
+                            </button>
+                        {/if}
                     </footer>
                 </div>
             </div>
