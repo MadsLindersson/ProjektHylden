@@ -36,19 +36,35 @@ export function accountCreated (hasCreated)  {
   }
 }
 
-export function profileUpdated (hasCreated)  {
-    if (hasCreated) {
+export function profileUpdated (hasUpdated)  {
+    if (hasUpdated) {
       toastr.success("Profile updated!");
   } else {
       toastr.error("Profile updating failed");
   }
 }
 
-export function userUpdated (hasCreated)  {
-    if (hasCreated) {
+export function userUpdated (hasUpdated)  {
+    if (hasUpdated) {
       toastr.success("User updated!");
   } else {
       toastr.error("User Updating failed");
+  }
+}
+
+export function userDeleted (hasDeleted)  {
+    if (hasDeleted) {
+      toastr.success("User deleted!");
+  } else {
+      toastr.error("User deletion failed");
+  }
+}
+
+export function postDeleted (hasDeleted)  {
+    if (hasDeleted) {
+      toastr.success("Post deleted!");
+  } else {
+      toastr.error("Post deletion failed");
   }
 }
 

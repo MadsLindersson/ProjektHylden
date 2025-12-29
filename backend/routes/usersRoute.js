@@ -87,5 +87,23 @@ router.patch("/users/:id/role", adminCheck, async (req, res) => {
     }
 });
 
+router.delete("/users/:id", adminCheck, async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        const result = await db.run("DELETE FROM users WHERE id = ?", userId);
+
+        if (result.changes !== 0)   {
+            res.status(200).send({ data: "User delete" });
+        } else  {
+            res.status(500).send({ data: "Something went wrong" });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: "Database error" });
+    }
+
+})
+
 
 export default router;

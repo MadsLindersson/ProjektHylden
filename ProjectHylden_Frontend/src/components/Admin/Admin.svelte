@@ -1,7 +1,7 @@
 <script>
     import { API_URL } from "../../utilFrontend/constants.js";
     import { handleProfileImageError } from "../../utilFrontend/imageErrors.js";
-  import { userUpdated } from "../../utilFrontend/toastr.js";
+    import { userUpdated, userDeleted } from "../../utilFrontend/toastr.js";
 
     import NavBar from "../NavBar/NavBar.svelte";
 
@@ -34,7 +34,7 @@
 
         if (response.ok)    {
             userUpdated(true);
-            const user = users.find(u => u.id === userId);
+            const user = users.find(user => user.id === userId);
 
             if (user) {
                 user.role = userRole;
@@ -43,6 +43,35 @@
             userUpdated(false);
         }
     }
+
+    async function handleDeleteUser (id)  {
+        const response = await fetch(`${API_URL}/users/${id}`, {
+            method: "DELETE",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (response.ok)    {
+            userDeleted(true);
+
+            users = users.filter(user => user.id !== id);
+        } else  {
+            userDeleted(false);
+        }
+    }
+
+    let searchQuery = $state("");
+
+    let filteredUsers = $derived(
+        users.filter(user => {
+            const matchesSearch = user.username.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                 user.role?.toLowerCase().includes(searchQuery.toLowerCase());
+
+            return matchesSearch;
+        })
+    );
 
     $effect(() => {
         handleGetUsers();
@@ -77,6 +106,7 @@
 
             <div class="relative w-full max-w-sm">
                 <input
+                    bind:value={searchQuery}
                     type="text"
                     placeholder="Search by username..."
                     class="w-full bg-[#1A1715] text-gray-300 placeholder-gray-500 rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-[#F5AE55] border border-gray-800 transition"
@@ -91,7 +121,7 @@
         </header>
 
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            {#each users as user}
+            {#each filteredUsers as user}
                 <div class="bg-[#1A1715] border border-gray-800 p-5 rounded-2xl flex items-center justify-between hover:border-gray-600 transition duration-300 shadow-xl">
                     
                         <div class="flex items-center space-x-4">
@@ -120,8 +150,8 @@
                             <label for="user-role" class="text-[10px] text-gray-500 uppercase font-bold ml-1">Role</label>
                             <select
                                 id="user-role" 
-                                value={user.role}
-                                onchange={(e) => handleUpdateUserRole(user.id, e.target.value)}
+                                bind:value={user.role}
+                                onchange={(e) => handleUpdateUserRole(user.id, user.role)}
                                 class="bg-[#0B0A09] border border-gray-800 text-sm text-gray-300 rounded-lg px-3 py-2 outline-none focus:border-orange-500 transition cursor-pointer"
                             >
                                 <option value="creator">Creator</option>
@@ -130,8 +160,9 @@
                             </select>
                         </div>
                         
-                        <button 
-                            aria-label="Delete button"
+                        <button
+                            onclick={() => handleDeleteUser(user.id)} 
+                            aria-label="Delete button {user.username}"
                             class="mt-5 p-2.5 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all border border-transparent cursor-pointer hover:border-red-500/20"
                         >
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

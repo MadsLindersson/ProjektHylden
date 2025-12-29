@@ -65,6 +65,7 @@ router.post("/posts/gallery/:amount", async (req, res) => {
             posts.category_id, 
             categories.name AS category_name,
             posts.user_id, 
+            posts.created_at,
             users.username,
             users.profile_pic_url,
                 (
@@ -97,9 +98,9 @@ router.post("/posts/gallery/:amount", async (req, res) => {
     }
 });
 
-router.post("/posts/:id", uploadPostPicture.array('postImages'), async (req, res) => {
+router.post("/posts/:userId", uploadPostPicture.array('postImages'), async (req, res) => {
     try {
-        const userId = req.params.id;
+        const userId = req.params.userId;
         const {title, description, category} = req.body;
 
         const postResult = await db.run(`INSERT INTO posts (title, description, category_id, user_id, created_at)
@@ -124,6 +125,24 @@ router.post("/posts/:id", uploadPostPicture.array('postImages'), async (req, res
 
     } catch (err)   {
         console.error(err);
+        res.status(500).send({ error: "Database error" });
+    }
+});
+
+router.delete("/posts/:postId", async (req, res) => {
+    try {
+        const postId = req.params.postId;
+
+        const postResult = await db.run("DELETE FROM posts WHERE id = ?", postId);
+        const postImgResult = await db.run("DELETE FROM post_images WHERE post_id = ?", postId);
+
+        if (postResult.changes !== 0 && postImgResult.changes !== 0)   {
+            res.status(200).send({ data: "Post deleted" });
+        } else {
+            res.status(500).send({ data: "Something went wrong" });
+        }
+    } catch (error) {
+        console.error(error);
         res.status(500).send({ error: "Database error" });
     }
 });

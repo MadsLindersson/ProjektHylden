@@ -1,8 +1,10 @@
 <script>
     import { API_URL } from "../../utilFrontend/constants.js";
     import { handlePostImageError, handleProfileImageError } from "../../utilFrontend/imageErrors.js";
+    import { authStore } from "../../utilFrontend/stores/authStore.js";
+    import { postDeleted } from "../../utilFrontend/toastr.js";
 
-    let { post, onclose } = $props();
+    let { post, onclose, onDelete } = $props();
 
     let images = $state();
     
@@ -21,6 +23,24 @@
         const data = await response.json(); 
 
         images = data.imageUrls;
+    }
+
+    async function handleDeletePost ()  {
+        const response = await fetch(`${API_URL}/posts/${post.id}`, {
+            method: "DELETE",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (response.ok)    {
+            postDeleted(true);
+            onclose();
+            onDelete(post.id);
+        } else  {
+            postDeleted(false);
+        }
     }
 
     function next() {
@@ -61,19 +81,32 @@
         <section class="flex-1 bg-[#141110] flex flex-col p-4 overflow-y-auto relative h-full custom-scrollbar">
             <div class="grid grid-cols-2 gap-4 h-fit">
                 {#each images as img, i}
-                    <button 
-                        type="button"
-                        onclick={() => selectedIndex = i}
-                        aria-label="View image {i + 1}"
-                        class="relative aspect-square overflow-hidden rounded-lg border border-white/10 cursor-pointer hover:border-white/30 transition-all group"
-                    >
-                        <img 
-                            src={`${API_URL}${img.image_url}`}
-                            onerror={handlePostImageError}
-                            alt="Gallery item" 
-                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                    </button>
+                    <div class="relative group aspect-square">
+                        <button 
+                            type="button"
+                            onclick={() => selectedIndex = i}
+                            aria-label="View image {i + 1}"
+                            class="w-full h-full overflow-hidden rounded-lg border border-white/10 cursor-pointer hover:border-white/30 transition-all"
+                        >
+                            <img 
+                                src={`${API_URL}${img.image_url}`}
+                                onerror={handlePostImageError}
+                                alt="Gallery item" 
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                        </button>
+                        {#if $authStore.userRole === "admin"}
+                            <button 
+                                onclick={() => {/* Logic to delete img.id */}}
+                                class="absolute top-2 right-2 p-1.5 bg-red-500/80 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 cursor-pointer shadow-lg"
+                                aria-label="Delete this image"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        {/if}
+                    </div>
                 {/each}
             </div>
 
@@ -124,15 +157,26 @@
             </header>
 
             <div class="px-5 flex-1 overflow-y-auto custom-scrollbar pb-5">
-                <div class="border border-white/20 rounded-2xl p-5 mb-4">
-                    <h2 class="text-white text-xl font-bold mb-2">{post.title}</h2>
+                <div class="relative border border-white/20 rounded-2xl p-5 mb-4">
+                    {#if $authStore.userRole === "admin"}
+                        <button 
+                            onclick={handleDeletePost}
+                            class="absolute top-4 right-4 p-2 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all duration-200 cursor-pointer"
+                            aria-label="Delete post"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    {/if}
+                    <h2 class="text-white text-xl font-bold mb-2 pr-10">{post.title}</h2>
                     <p class="text-gray-400 text-sm leading-relaxed mb-4">{post.description}</p>
 
                     <footer class="flex items-center gap-4 text-xs font-medium">
                         <span class="bg-[#332A26] text-white px-4 py-1.5 rounded-full border border-white/5">{post.category_name}</span>
                         <div class="flex items-center gap-1.5 text-gray-500">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                             {new Date(post.created_at).toLocaleDateString("da-DK", { month: "long", year: "numeric" })}
+                            {new Date(post.created_at).toLocaleDateString("da-DK", { month: "long", year: "numeric" })}
                         </div>
                     </footer>
                 </div>
