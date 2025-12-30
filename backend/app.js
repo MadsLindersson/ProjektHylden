@@ -11,16 +11,45 @@ app.use(
   })
 );
 
-// Middleware ==================================================================================================
 import session from "express-session";
-app.use(
-  session({
+
+const sessionMiddleware = session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     cookie: { secure: false },
-  })
-);
+  });
+
+app.use(sessionMiddleware);
+
+import http from "http";
+const server = http.createServer(app);
+
+import { Server } from "socket.io";
+
+export const io = new Server(server, {
+  cors: {
+    origin: ["http://localhost:5173"],
+    credentials: true
+  }
+});
+
+io.engine.use(sessionMiddleware);
+
+export const onlineUsers = new Map();
+
+io.on("connection", (socket) => {
+  const userId = socket.request.session.userId;
+
+  if (userId) {
+    onlineUsers.set(userId, socket.id);
+    console.log(`User ${userId} linked to socket ${socket.id}`);
+  }
+
+  socket.on("disconnect", () => {
+    onlineUsers.delete(userId);
+  });
+});
 
 import helmet from "helmet";
 app.use(helmet());
@@ -67,9 +96,10 @@ import usersRoute from './routes/usersRoute.js';
 app.use(usersRoute);
 
 import categoryRoute from './routes/categoryRoute.js';
+import { sessionCheck } from "./utilBackend/sessionCheck.js";
 app.use(categoryRoute);
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log("Server has startet on port", PORT);
 });
