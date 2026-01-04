@@ -1,6 +1,10 @@
 <script>
   import { Router, Route } from 'svelte-routing';
   import { checkAuthStatus } from './utilFrontend/stores/authStore.js';
+  import { authStore } from './utilFrontend/stores/authStore.js';
+  import { io } from "socket.io-client";
+  import { postLiked } from './utilFrontend/toastr.js';
+  import { API_URL } from './utilFrontend/constants.js';
 
   import MainPage from './components/MainPage'
   import SignIn from './components/SignIn';
@@ -12,10 +16,35 @@
   import ProtectedRoute from './components/ProtectedRoute';
   import Admin from './components/Admin/Admin.svelte';
   import ProtectedAdminRoute from './components/ProtectedAdminRoute/ProtectedAdminRoute.svelte';
+  
+
+  let socket = null;
 
   $effect(() => {
-    checkAuthStatus();
-  });
+      if ($authStore.isAuthenticated && !socket) {
+        socket = io(API_URL, { withCredentials: true });
+
+        socket.on("connect", () => {
+          console.log("Live connection established", socket.id);
+        });
+
+        socket.on("new-like-notification", (data) => {
+          postLiked(data.message);
+        });
+
+        return () => {
+          if (socket) {
+            socket.disconnect();
+            socket = null;
+            console.log("Socket disconnected");
+          }
+        };
+      }
+    });
+
+    $effect(() => {
+      checkAuthStatus();
+    });
 
 </script>
 

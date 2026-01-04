@@ -43,7 +43,8 @@ router.delete("/signOut", (req, res) => {
         if (error)  {
             res.status(500).send({ data: "Sign out failed" })
         } else {
-            res.send({ data: "Signed out succesfully" });
+            res.clearCookie('connect.sid'); 
+            res.send({ data: "Signed out successfully" });
         }
     });
 });

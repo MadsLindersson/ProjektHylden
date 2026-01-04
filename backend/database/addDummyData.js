@@ -91,17 +91,6 @@ db.exec(`
     (14, 'https://picsum.photos/seed/1404/600/400', 3);
 
     ----------------------------------------------------------------------
-    -- COMMENTS (No change needed)
-    ----------------------------------------------------------------------
-    INSERT INTO comments (post_id, user_id, text, created_at)
-    VALUES
-    (1, 2, 'Amazing shot!', datetime('now')),
-    (1, 3, 'I love the colors.', datetime('now')),
-    (2, 1, 'This is so creative!', datetime('now')),
-    (5, 3, 'Really nice illustration.', datetime('now')),
-    (7, 2, 'Beautiful forest shots!', datetime('now'));
-
-    ----------------------------------------------------------------------
     -- LIKES (No change needed)
     ----------------------------------------------------------------------
     INSERT INTO likes (post_id, user_id, created_at)

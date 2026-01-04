@@ -84,6 +84,10 @@ export function postCreated (hasCreated)  {
   }
 }
 
+export function postLiked (message)  {
+  toastr.success(message);
+}
+
 export function pwNotAMatch ()  {
   toastr.error("Passwords do not match!");
 }

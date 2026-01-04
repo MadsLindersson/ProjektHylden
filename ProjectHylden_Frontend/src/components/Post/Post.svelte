@@ -60,6 +60,21 @@
         }
     }
 
+    async function handleLikePost ()    {
+        const response = await fetch(`${API_URL}/posts/like`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ postId: post.id, userId: $authStore.userId })
+        });
+
+        if (response.ok) {
+            console.log("Like successful!");
+        }
+    }
+
     function next() {
         if (selectedIndex < images.length - 1) {
             selectedIndex++;
@@ -197,7 +212,7 @@
                         </div>
                         {#if $authStore.isAuthenticated}
                             <button 
-                                onclick={() => {/* Handle Like Logic */}}
+                                onclick={handleLikePost}
                                 class="group flex items-center gap-1.5 transition-all duration-200 cursor-pointer"
                             >
                                 <svg 

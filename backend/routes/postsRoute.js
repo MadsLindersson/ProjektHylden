@@ -4,6 +4,8 @@ const router = Router();
 import db from '../database/connection.js';
 import { uploadPostPicture } from "../utilBackend/multerConfig.js";
 import { adminCheck } from "../utilBackend/adminCheck.js";
+import { sessionCheck } from "../utilBackend/sessionCheck.js";
+import { onlineUsers, io } from "../app.js";
 
 router.get("/posts/:userId", async (req, res) => {
     try {
@@ -166,5 +168,34 @@ router.delete("/images/:imageId", adminCheck, async (req, res) => {
     }
 });
 
+router.post("/posts/like", sessionCheck, async (req, res) => {
+    try {
+        const { postId, userId } = req.body;
+
+        console.log("--- Like Attempt ---");
+        console.log("Full Body:", req.body);
+        console.log("postId:", postId);
+        console.log("userId:", userId);
+
+        await db.run("INSERT INTO likes (post_id, user_id) VALUES (?, ?)", [postId, userId]);
+
+        const recipient = await db.get("SELECT user_id FROM posts WHERE id = ?", [postId]);
+
+        if (recipient)  {
+            const recipientId = recipient.user_id;
+            const recipientSocketId = onlineUsers.get(recipientId);
+
+            io.to(recipientSocketId).emit("new-like-notification", {
+                message: `${req.session.username} liked your post!`,
+                postId: postId
+                });
+        }
+
+        res.status(200).send({ data: "Post liked" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: "Database error" });
+    }
+});
 
 export default router;
