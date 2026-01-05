@@ -6,9 +6,6 @@
 
     let { post, onclose, onDelete } = $props();
 
-    console.log(post.user_has_liked);
-    
-
     let images = $state();
     
     let selectedIndex = $state(null);

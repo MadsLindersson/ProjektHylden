@@ -10,6 +10,7 @@ import { onlineUsers, io } from "../app.js";
 router.get("/posts/:userId", async (req, res) => {
     try {
         const userId = req.params.userId;
+        const viewerId = req.session.userId || 0;
 
         const posts = await db.all(`
             SELECT 
@@ -40,7 +41,7 @@ router.get("/posts/:userId", async (req, res) => {
             JOIN users ON posts.user_id = users.id
             WHERE posts.user_id = ?
             ORDER BY posts.id DESC;
-        `, userId);
+        `, viewerId, userId);
 
         res.send({ posts: posts });
     } catch (error) {
@@ -132,16 +133,14 @@ router.post("/posts/like", sessionCheck, async (req, res) => {
 
         const newCount = await db.get("SELECT count(*) as count FROM likes WHERE post_id = ?", postId);
 
-        const recipient = await db.get("SELECT user_id FROM posts WHERE id = ?", postId);
+        const recipient = await db.get("SELECT user_id, title FROM posts WHERE id = ?", postId);
 
-        if (recipient)  {
-            const recipientId = recipient.user_id;
-            const recipientSocketId = onlineUsers.get(recipientId);
+        const recipientSocketId = onlineUsers.get(recipient.user_id);
 
-            io.to(recipientSocketId).emit("new-like-notification", {
-                message: `${req.session.username} liked your post!`,
-                postId: postId
-                });
+        if (recipientSocketId)  {
+            io.to(recipientSocketId).emit("like-notification", {
+                message: `${req.session.username} like your post: "${recipient.title}"`
+            });
         }
 
         res.status(200).send({ data: "Post liked", newCount: newCount.count });
@@ -225,7 +224,7 @@ router.delete("/likes/:postId/:userId", sessionCheck, async (req, res) => {
         const result = await db.run("DELETE FROM likes WHERE post_id = ? AND user_id = ?", postId, userId);
 
         if (result.changes === 0) {
-                return res.status(500).send({ data: "Like not found" });
+            return res.status(500).send({ data: "Like not found" });
         }
 
         const newCount = await db.get("SELECT COUNT(*) as count FROM likes WHERE post_id = ?", postId);

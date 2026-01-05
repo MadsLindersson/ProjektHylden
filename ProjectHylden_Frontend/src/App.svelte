@@ -24,11 +24,7 @@
       if ($authStore.isAuthenticated && !socket) {
         socket = io(API_URL, { withCredentials: true });
 
-        socket.on("connect", () => {
-          console.log("Live connection established", socket.id);
-        });
-
-        socket.on("new-like-notification", (data) => {
+        socket.on("like-notification", (data) => {
           postLiked(data.message);
         });
 

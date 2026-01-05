@@ -82,7 +82,7 @@
             </span>
         </h1>
         <p class="text-xl text-gray-400 max-w-3xl mx-auto">
-            Join a community of artists, designers, and creators. Upload your work, discover inspiration, and connect with fellow creatives.
+            Join a community of artists, designers, and creators. Upload your work, discover inspiration, and connect with fellow talent.
         </p>
     </header>
 

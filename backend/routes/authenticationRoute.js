@@ -4,6 +4,7 @@ const router = Router();
 import hashing from '../utilBackend/hashing.js';
 import db from '../database/connection.js';
 import { signIn } from '../utilBackend/signIn.js';
+import { sendEmail } from '../utilBackend/resend.js';
 
 // Endpoints =====================================================================================
 
@@ -31,6 +32,12 @@ router.post("/signUp", async (req, res) => {
     
     try {
         await db.run('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', [username, email, hashedPassword]);
+
+        await sendEmail(
+            email,
+            "Welcome to authManII!",
+            `<h1>Welcome!</h1><p>Your account has been created.</p>`
+        );
     } catch (error)  {
         return res.status(500).send({ data: "Something went wrong", error })
     }

@@ -95,7 +95,7 @@
     <header class="mb-10 flex items-start space-x-6">
         
         <div class="flex-shrink-0 relative"> 
-            {#if user.profile_pic_url}
+            {#if user.username}
                 <img
                     src={`${API_URL}${user.profile_pic_url}`}
                     onerror={handleProfileImageError}

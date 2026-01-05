@@ -23,10 +23,10 @@
 
         try {
             const response = await fetch ("http://localhost:8080/signUp", {
-                method: 'POST',
-                credentials: 'include',
+                method: "POST",
+                credentials: "include",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify(user)
             });
