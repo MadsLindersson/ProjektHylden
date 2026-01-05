@@ -27,7 +27,14 @@ router.get("/posts/:userId", async (req, res) => {
                     FROM post_images 
                     WHERE post_images.post_id = posts.id 
                     ORDER BY order_index ASC 
-                ) AS image_urls
+                ) AS image_urls,
+                (
+                    SELECT COUNT(*) 
+                    FROM likes 
+                    WHERE likes.post_id = posts.id
+                ) AS likes_count,
+                (SELECT COUNT(*) FROM likes WHERE post_id = posts.id AND user_id = ?
+                ) AS user_has_liked
             FROM posts
             JOIN categories ON posts.category_id = categories.id
             JOIN users ON posts.user_id = users.id
@@ -60,6 +67,7 @@ router.post("/posts/gallery/:amount", async (req, res) => {
     try {
         const amount = parseInt(req.params.amount, 10);
         const exclude = req.body.exclude || [];
+        const viewerId = req.session.userId || 0;
 
         let query = `
             SELECT 
@@ -77,18 +85,25 @@ router.post("/posts/gallery/:amount", async (req, res) => {
                     FROM post_images 
                     WHERE post_images.post_id = posts.id 
                     ORDER BY order_index ASC 
-                ) AS image_urls
+                ) AS image_urls,
+                (
+                    SELECT COUNT(*) 
+                    FROM likes 
+                    WHERE likes.post_id = posts.id
+                ) AS likes_count,
+                (SELECT COUNT(*) FROM likes WHERE post_id = posts.id AND user_id = ?
+                ) AS user_has_liked
             FROM posts
             JOIN users ON posts.user_id = users.id
             JOIN categories ON posts.category_id = categories.id 
         `;
         
-        let params = [];
+        let params = [viewerId];
 
         if (exclude.length > 0) {
             const placeholders = exclude.map(() => "?").join(",");
             query += `WHERE id NOT IN (${placeholders}) `;
-            params = exclude;
+            params = [...params, ...exclude];
         }
 
         query += "ORDER BY RANDOM() LIMIT ?";
@@ -99,6 +114,40 @@ router.post("/posts/gallery/:amount", async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send( { error: "Database error" } );
+    }
+});
+
+router.post("/posts/like", sessionCheck, async (req, res) => {
+    try {
+        const { postId, userId } = req.body;
+
+        try {
+            await db.run("INSERT INTO likes (post_id, user_id) VALUES (?, ?)", postId, userId);
+        } catch (error) {
+            if (error.message.includes("UNIQUE")) {
+                return res.status(400).send({ data: "Already liked" });
+            }
+            res.status(500).send({ error: "Database error" });
+        }
+
+        const newCount = await db.get("SELECT count(*) as count FROM likes WHERE post_id = ?", postId);
+
+        const recipient = await db.get("SELECT user_id FROM posts WHERE id = ?", postId);
+
+        if (recipient)  {
+            const recipientId = recipient.user_id;
+            const recipientSocketId = onlineUsers.get(recipientId);
+
+            io.to(recipientSocketId).emit("new-like-notification", {
+                message: `${req.session.username} liked your post!`,
+                postId: postId
+                });
+        }
+
+        res.status(200).send({ data: "Post liked", newCount: newCount.count });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: "Database error" });
     }
 });
 
@@ -168,30 +217,20 @@ router.delete("/images/:imageId", adminCheck, async (req, res) => {
     }
 });
 
-router.post("/posts/like", sessionCheck, async (req, res) => {
-    try {
-        const { postId, userId } = req.body;
+router.delete("/likes/:postId/:userId", sessionCheck, async (req, res) => {
+     try {
+        const postId = req.params.postId;
+        const userId = req.params.userId;
 
-        console.log("--- Like Attempt ---");
-        console.log("Full Body:", req.body);
-        console.log("postId:", postId);
-        console.log("userId:", userId);
+        const result = await db.run("DELETE FROM likes WHERE post_id = ? AND user_id = ?", postId, userId);
 
-        await db.run("INSERT INTO likes (post_id, user_id) VALUES (?, ?)", [postId, userId]);
-
-        const recipient = await db.get("SELECT user_id FROM posts WHERE id = ?", [postId]);
-
-        if (recipient)  {
-            const recipientId = recipient.user_id;
-            const recipientSocketId = onlineUsers.get(recipientId);
-
-            io.to(recipientSocketId).emit("new-like-notification", {
-                message: `${req.session.username} liked your post!`,
-                postId: postId
-                });
+        if (result.changes === 0) {
+                return res.status(500).send({ data: "Like not found" });
         }
 
-        res.status(200).send({ data: "Post liked" });
+        const newCount = await db.get("SELECT COUNT(*) as count FROM likes WHERE post_id = ?", postId);
+
+        res.status(200).send({ data: "Post unliked", newCount: newCount.count });
     } catch (error) {
         console.error(error);
         res.status(500).send({ error: "Database error" });

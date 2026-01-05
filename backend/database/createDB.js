@@ -20,7 +20,7 @@ db.exec(`
     CREATE TABLE posts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
-        title TEXT,
+        title TEXT NOT NULL,
         description TEXT,
         category_id INTEGER, 
         created_at TEXT NOT NULL,
@@ -38,10 +38,10 @@ db.exec(`
     );
 
     CREATE TABLE likes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
         post_id INTEGER NOT NULL,
         user_id INTEGER NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (post_id, user_id),
         FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
