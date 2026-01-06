@@ -50,6 +50,51 @@ router.get("/posts/:userId", async (req, res) => {
     }
 });
 
+router.get("/posts", async (req, res) => {
+    try {
+        const viewerId = req.session.userId || 0;
+
+        const posts = await db.all(`
+            SELECT 
+                posts.id, 
+                posts.title, 
+                posts.category_id, 
+                posts.description,
+                posts.created_at,
+                categories.name AS category_name,
+                posts.user_id, 
+                users.username,
+                users.profile_pic_url,
+                (
+                    SELECT image_url
+                    FROM post_images 
+                    WHERE post_images.post_id = posts.id 
+                    ORDER BY order_index ASC 
+                    LIMIT 1
+                ) AS image_urls,
+                (
+                    SELECT COUNT(*) 
+                    FROM likes 
+                    WHERE likes.post_id = posts.id
+                ) AS likes_count,
+                (
+                    SELECT COUNT(*) 
+                    FROM likes 
+                    WHERE post_id = posts.id AND user_id = ?
+                ) AS user_has_liked
+            FROM posts
+            JOIN categories ON posts.category_id = categories.id
+            JOIN users ON posts.user_id = users.id
+            ORDER BY posts.id DESC;
+        `, [viewerId]);
+
+        res.send({ posts: posts });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: "Database error" });
+    }
+});
+
 router.get("/imageUrls/:postId", async (req, res) => {
     try {
         const postId = req.params.postId;
@@ -62,61 +107,6 @@ router.get("/imageUrls/:postId", async (req, res) => {
         res.status(500).send({ error: "Database error" });
     }
 })
-
-// Is a GET but has to be post so the frontend can send a list of id's to exclude, to avoid dublicates.
-router.post("/posts/gallery/:amount", async (req, res) => {
-    try {
-        const amount = parseInt(req.params.amount, 10);
-        const exclude = req.body.exclude || [];
-        const viewerId = req.session.userId || 0;
-
-        let query = `
-            SELECT 
-            posts.id, 
-            posts.title, 
-            posts.category_id, 
-            categories.name AS category_name,
-            posts.user_id, 
-            posts.created_at,
-            users.username,
-            users.profile_pic_url,
-                (
-                    SELECT 
-                    image_url
-                    FROM post_images 
-                    WHERE post_images.post_id = posts.id 
-                    ORDER BY order_index ASC 
-                ) AS image_urls,
-                (
-                    SELECT COUNT(*) 
-                    FROM likes 
-                    WHERE likes.post_id = posts.id
-                ) AS likes_count,
-                (SELECT COUNT(*) FROM likes WHERE post_id = posts.id AND user_id = ?
-                ) AS user_has_liked
-            FROM posts
-            JOIN users ON posts.user_id = users.id
-            JOIN categories ON posts.category_id = categories.id 
-        `;
-        
-        let params = [viewerId];
-
-        if (exclude.length > 0) {
-            const placeholders = exclude.map(() => "?").join(",");
-            query += `WHERE id NOT IN (${placeholders}) `;
-            params = [...params, ...exclude];
-        }
-
-        query += "ORDER BY RANDOM() LIMIT ?";
-        params.push(amount);
-
-        const rows = await db.all(query, params);
-        res.send({ posts: rows});
-    } catch (err) {
-        console.error(err);
-        res.status(500).send( { error: "Database error" } );
-    }
-});
 
 router.post("/posts/like", sessionCheck, async (req, res) => {
     try {

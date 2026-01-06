@@ -3,8 +3,7 @@
     import CategoriesBar from '../CategoriesBar';
     import PostCard from '../PostCard';
     import Post from '../Post';
-
-    let exclude = [];
+  import { API_URL } from "../../utilFrontend/constants";
 
     let posts = $state([]);
 
@@ -28,22 +27,17 @@
     );
 
     async function handleGetPosts ()    {
-        const response = await fetch("http://localhost:8080/posts/gallery/20", {
-            method: "POST",
+        const response = await fetch(`${API_URL}/posts`, {
+            method: "GET",
             credentials: "include",
             headers: {
                 "Content-Type": "application/json"
-            },
-            body: JSON.stringify(exclude)
+            }
         });
 
         const data = await response.json();
 
-        posts = [...posts, ...data.posts];
-
-        for (let post of data.posts) {
-            exclude.push(post.id);
-        }
+        posts = data.posts;
     }
 
     function onSelect (postFromPostCard)    {
