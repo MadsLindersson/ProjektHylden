@@ -17,6 +17,12 @@
             alt={postItem.title}
             class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
         />
+        
+        <div class="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-black/60 to-transparent p-3 text-left pointer-events-none">
+            <h3 class="text-white font-semibold text-lg drop-shadow-md line-clamp-1">
+                {postItem.title}
+            </h3>
+        </div>
     </div>
 
     <div class="flex justify-between items-center p-3">

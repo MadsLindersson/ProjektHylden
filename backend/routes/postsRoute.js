@@ -1,18 +1,19 @@
 import { Router } from "express";
 const router = Router();
 
-import db from '../database/connection.js';
+import db from "../database/connection.js";
 import { uploadPostPicture } from "../utilBackend/multerConfig.js";
-import { adminCheck } from "../utilBackend/adminCheck.js";
+import { authCheck } from "../utilBackend/roleChecks.js";
 import { sessionCheck } from "../utilBackend/sessionCheck.js";
 import { onlineUsers, io } from "../app.js";
 
 router.get("/posts/:userId", async (req, res) => {
-    try {
-        const userId = req.params.userId;
-        const viewerId = req.session.userId || 0;
+  try {
+    const userId = req.params.userId;
+    const viewerId = req.session.userId || 0;
 
-        const posts = await db.all(`
+    const posts = await db.all(
+      `
             SELECT 
                 posts.id, 
                 posts.title, 
@@ -41,20 +42,24 @@ router.get("/posts/:userId", async (req, res) => {
             JOIN users ON posts.user_id = users.id
             WHERE posts.user_id = ?
             ORDER BY posts.id DESC;
-        `, viewerId, userId);
+        `,
+      viewerId,
+      userId
+    );
 
-        res.send({ posts: posts });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send({ error: "Database error" });
-    }
+    res.send({ posts: posts });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Database error" });
+  }
 });
 
 router.get("/posts", async (req, res) => {
-    try {
-        const viewerId = req.session.userId || 0;
+  try {
+    const viewerId = req.session.userId || 0;
 
-        const posts = await db.all(`
+    const posts = await db.all(
+      `
             SELECT 
                 posts.id, 
                 posts.title, 
@@ -86,144 +91,160 @@ router.get("/posts", async (req, res) => {
             JOIN categories ON posts.category_id = categories.id
             JOIN users ON posts.user_id = users.id
             ORDER BY posts.id DESC;
-        `, [viewerId]);
+        `,
+      viewerId
+    );
 
-        res.send({ posts: posts });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send({ error: "Database error" });
-    }
+    res.send({ posts: posts });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Database error" });
+  }
 });
 
 router.get("/imageUrls/:postId", async (req, res) => {
-    try {
-        const postId = req.params.postId;
+  try {
+    const postId = req.params.postId;
 
-        const imageUrls = await db.all(`SELECT * FROM post_images WHERE post_id = ?`, postId);
+    const imageUrls = await db.all("SELECT * FROM post_images WHERE post_id = ?", postId);
 
-        res.send({ imageUrls: imageUrls });
-    } catch (error)  {
-        console.error(error);
-        res.status(500).send({ error: "Database error" });
-    }
-})
+    res.send({ imageUrls: imageUrls });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Database error" });
+  }
+});
 
 router.post("/posts/like", sessionCheck, async (req, res) => {
+  try {
+    const { postId, userId } = req.body;
+
     try {
-        const { postId, userId } = req.body;
-
-        try {
-            await db.run("INSERT INTO likes (post_id, user_id) VALUES (?, ?)", postId, userId);
-        } catch (error) {
-            if (error.message.includes("UNIQUE")) {
-                return res.status(400).send({ data: "Already liked" });
-            }
-            res.status(500).send({ error: "Database error" });
-        }
-
-        const newCount = await db.get("SELECT count(*) as count FROM likes WHERE post_id = ?", postId);
-
-        const recipient = await db.get("SELECT user_id, title FROM posts WHERE id = ?", postId);
-
-        const recipientSocketId = onlineUsers.get(recipient.user_id);
-
-        if (recipientSocketId)  {
-            io.to(recipientSocketId).emit("like-notification", {
-                message: `${req.session.username} like your post: "${recipient.title}"`
-            });
-        }
-
-        res.status(200).send({ data: "Post liked", newCount: newCount.count });
+      await db.run("INSERT INTO likes (post_id, user_id) VALUES (?, ?)", postId, userId);
     } catch (error) {
-        console.error(error);
-        res.status(500).send({ error: "Database error" });
+      if (error.message.includes("UNIQUE")) {
+        return res.status(400).send({ data: "Already liked" });
+      }
+      res.status(500).send({ error: "Database error" });
     }
+
+    const newCount = await db.get("SELECT count(*) as count FROM likes WHERE post_id = ?", postId);
+
+    const recipient = await db.get("SELECT user_id, title FROM posts WHERE id = ?", postId);
+
+    const recipientSocketId = onlineUsers.get(recipient.user_id);
+
+    if (recipientSocketId) {
+      io.to(recipientSocketId).emit("like-notification", {
+        message: `${req.session.username} liked your post: "${recipient.title}"`,
+      });
+    }
+
+    res.status(200).send({ data: "Post liked", newCount: newCount.count });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Database error" });
+  }
 });
 
-router.post("/posts/:userId", uploadPostPicture.array('postImages'), async (req, res) => {
+router.post("/posts/:userId", uploadPostPicture.array("postImages"), async (req, res) => {
     try {
-        const userId = req.params.userId;
-        const {title, description, category} = req.body;
+      const userId = req.params.userId;
+      const { title, description, category } = req.body;
 
-        const postResult = await db.run(`INSERT INTO posts (title, description, category_id, user_id, created_at)
-            VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)`, [title, description, category, userId]);
+      const postResult = await db.run(
+        "INSERT INTO posts (title, description, category_id, user_id) VALUES (?, ?, ?, ?)",
+        title, description, category, userId
+      );
 
-        let postId = postResult.lastID 
-    
-        if (req.files && req.files.length > 0)   {
-            for (let i = 0; i < req.files.length; i++) {
-                const imageUrl = `/uploads/postImages/${req.files[i].filename}`;
-                
-                await db.run(
-                    `INSERT INTO post_images (post_id, image_url, order_index) 
+      let postId = postResult.lastID;
+
+      if (req.files && req.files.length > 0) {
+        for (let i = 0; i < req.files.length; i++) {
+          const imageUrl = `/uploads/postImages/${req.files[i].filename}`;
+
+          await db.run(
+            `INSERT INTO post_images (post_id, image_url, order_index) 
                      VALUES (?, ?, ?)`,
-                    [postId, imageUrl, i]
-                );
-            }
-        };
+            [postId, imageUrl, i]
+          );
+        }
+      }
 
-        res.status(201).send({ data: "Post created" })
-
-
-    } catch (err)   {
-        console.error(err);
-        res.status(500).send({ error: "Database error" });
+      res.status(201).send({ data: "Post created" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({ error: "Database error" });
     }
+  }
+);
+
+router.delete("/posts/:postId", authCheck, async (req, res) => {
+  try {
+    const postId = req.params.postId;
+
+    const postResult = await db.run("DELETE FROM posts WHERE id = ?", postId);
+    const postImgResult = await db.run(
+      "DELETE FROM post_images WHERE post_id = ?",
+      postId
+    );
+
+    if (postResult.changes !== 0 && postImgResult.changes !== 0) {
+      res.status(200).send({ data: "Post deleted" });
+    } else {
+      res.status(500).send({ data: "Something went wrong" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Database error" });
+  }
 });
 
-router.delete("/posts/:postId", adminCheck, async (req, res) => {
-    try {
-        const postId = req.params.postId;
+router.delete("/images/:imageId", authCheck, async (req, res) => {
+  try {
+    const imageId = req.params.imageId;
 
-        const postResult = await db.run("DELETE FROM posts WHERE id = ?", postId);
-        const postImgResult = await db.run("DELETE FROM post_images WHERE post_id = ?", postId);
+    const result = await db.run(
+      "DELETE FROM post_images WHERE id = ?",
+      imageId
+    );
 
-        if (postResult.changes !== 0 && postImgResult.changes !== 0)   {
-            res.status(200).send({ data: "Post deleted" });
-        } else {
-            res.status(500).send({ data: "Something went wrong" });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).send({ error: "Database error" });
+    if (result.changes !== 0) {
+      res.status(200).send({ data: "Image deleted" });
+    } else {
+      res.status(500).send({ data: "Something went wrong" });
     }
-});
-
-router.delete("/images/:imageId", adminCheck, async (req, res) => {
-    try {
-        const imageId = req.params.imageId;
-
-        const result = await db.run("DELETE FROM post_images WHERE id = ?", imageId);
-
-        if (result.changes !== 0)   {
-            res.status(200).send({ data: "Image deleted" });
-        } else {
-            res.status(500).send({ data: "Something went wrong" });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).send({ error: "Database error" });
-    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Database error" });
+  }
 });
 
 router.delete("/likes/:postId/:userId", sessionCheck, async (req, res) => {
-     try {
-        const postId = req.params.postId;
-        const userId = req.params.userId;
+  try {
+    const postId = req.params.postId;
+    const userId = req.params.userId;
 
-        const result = await db.run("DELETE FROM likes WHERE post_id = ? AND user_id = ?", postId, userId);
+    const result = await db.run(
+      "DELETE FROM likes WHERE post_id = ? AND user_id = ?",
+      postId,
+      userId
+    );
 
-        if (result.changes === 0) {
-            return res.status(500).send({ data: "Like not found" });
-        }
-
-        const newCount = await db.get("SELECT COUNT(*) as count FROM likes WHERE post_id = ?", postId);
-
-        res.status(200).send({ data: "Post unliked", newCount: newCount.count });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send({ error: "Database error" });
+    if (result.changes === 0) {
+      return res.status(500).send({ data: "Like not found" });
     }
+
+    const newCount = await db.get(
+      "SELECT COUNT(*) as count FROM likes WHERE post_id = ?",
+      postId
+    );
+
+    res.status(200).send({ data: "Post unliked", newCount: newCount.count });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Database error" });
+  }
 });
 
 export default router;

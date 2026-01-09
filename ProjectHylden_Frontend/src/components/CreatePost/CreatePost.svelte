@@ -42,6 +42,14 @@
         }
     }
 
+    let previewUrl = $state();
+
+    $effect(() => {
+        if (files && files[0]) {
+            previewUrl = URL.createObjectURL(files[0]);
+        }
+    });
+
     let categories = $state([]);
 
     $effect(() => {
@@ -143,40 +151,48 @@
         </div>
 
         <div class="hidden lg:block lg:w-1/2 p-8 bg-gradient-to-r from-[#0D0B09] to-[#391E15]">
-            <div class="h-full flex flex-col justify-center items-center text-center space-y-6">
+    <div class="h-full flex flex-col justify-center items-center text-center space-y-6">
+        
+        <label 
+            for="image-upload" 
+            class="w-full h-80 rounded-xl overflow-hidden shadow-2xl border-2 border-dashed border-gray-600 hover:border-[#F5AE55] transition duration-300 cursor-pointer flex items-center justify-center relative"
+        >
+            <div class="w-full h-full bg-[#1C1715] flex flex-col items-center justify-center space-y-3 text-gray-400 p-4">
                 
-                <label 
-                    for="image-upload" 
-                    class="w-full h-80 rounded-xl overflow-hidden shadow-2xl border-2 border-dashed border-gray-600 hover:border-[#F5AE55] transition duration-300 cursor-pointer flex items-center justify-center relative"
-                >
-                    <div class="w-full h-full bg-[#1C1715] flex flex-col items-center justify-center space-y-3 text-gray-400 p-4">
-                        
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-                        </svg>
+            {#if previewUrl}
+                <img src={previewUrl} alt="Preview" class="w-full h-full object-cover" />
+                
+                <div class="absolute top-2 right-2 bg-orange-500 text-black text-xs font-bold px-2 py-1 rounded">
+                    New
+                </div>
+            
+            {:else}
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                </svg>
+                <p class="text-base font-semibold">Click to upload images</p>
+                <p class="text-sm">PNG, JPG</p>
+            {/if}
 
-                        <p class="text-base font-semibold">Click to upload images</p>
-                        <p class="text-sm">PNG, JPG</p>
-                        
-                        <input 
-                            type="file" 
-                            id="image-upload" 
-                            accept="image/*" 
-                            class="hidden"
-                            required
-                            multiple
-                            bind:files={files}
-                            />
-                    </div>
-                </label>
-
-                <h2 class="text-2xl font-bold text-white">
-                    Image Preview
-                </h2>
-                <p class="text-gray-400 max-w-xs">
-                    This will be the main image shown on your profile and in the feed.
-                </p>
+                <input 
+                    type="file" 
+                    id="image-upload" 
+                    accept="image/*" 
+                    class="hidden"
+                    required
+                    multiple
+                    bind:files={files}
+                    />
             </div>
-        </div>
+        </label>
+
+        <h2 class="text-2xl font-bold text-white">
+            Image Preview
+        </h2>
+        <p class="text-gray-400 max-w-xs">
+            This will be the thumbnail of your post.
+        </p>
+    </div>
+</div>
     </div>
 </div>

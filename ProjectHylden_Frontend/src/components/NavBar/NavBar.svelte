@@ -1,10 +1,11 @@
 <script>
-   import { Link, navigate } from 'svelte-routing';
-   import { authStore, clientLogout } from '../../utilFrontend/stores/authStore.js';
-   import { signOutNotification } from '../../utilFrontend/toastr.js';
+    import { Link, navigate } from 'svelte-routing';
+    import { authStore, clientLogout } from '../../utilFrontend/stores/authStore.js';
+    import { signOutNotification } from '../../utilFrontend/toastr.js';
+    import { API_URL } from '../../utilFrontend/constants.js';
 
    async function handleSignOut () {
-      const response = await fetch("http://localhost:8080/signOut", {
+      const response = await fetch(`${API_URL}/signOut`, {
         method: "DELETE",
         credentials: "include"
       });

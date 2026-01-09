@@ -29,7 +29,7 @@ async function seed() {
     ];
 
     for (let i = 1; i <= usernames.length; i++) {
-        const isAdmin = usernames[i-1] === "AdminMads";
+        const isAdmin = usernames[i-1] === "Admin";
         
         await db.run(
             `INSERT INTO users (username, email, password, profile_pic_url, bio, role) 
@@ -56,7 +56,7 @@ async function seed() {
     for (let i = 1; i <= 60; i++) {
         const userId = Math.floor(Math.random() * 20) + 1;
         const categoryId = Math.floor(Math.random() * 10) + 1;
-        const title = titles[i % titles.length] + " #" + i;
+        const title = titles[i % titles.length];
         const date = new Date(Date.now() - Math.floor(Math.random() * 1000000000)).toISOString();
 
         const result = await db.run(

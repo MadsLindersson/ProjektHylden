@@ -1,8 +1,8 @@
 <script>
     import { Link, navigate } from "svelte-routing";
     import { authStore } from "../../utilFrontend/stores/authStore.js";
-    import { onMount } from "svelte";
     import { profileUpdated } from "../../utilFrontend/toastr.js";
+    import { API_URL } from "../../utilFrontend/constants.js";
 
     let { userId } = $props();
     
@@ -11,7 +11,7 @@
     let files = $state();
 
     async function handleGetUser () {
-        const response = await fetch(`http://localhost:8080/users/${userId}`, {
+        const response = await fetch(`${API_URL}/users/${userId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -36,7 +36,7 @@
         };
 
         try {
-            const response = await fetch(`http://localhost:8080/users/${userId}`, {
+            const response = await fetch(`${API_URL}/users/${userId}`, {
                 method: "PATCH",
                 body: formData
             });        

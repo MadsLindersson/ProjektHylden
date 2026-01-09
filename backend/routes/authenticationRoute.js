@@ -6,8 +6,6 @@ import db from '../database/connection.js';
 import { signIn } from '../utilBackend/signIn.js';
 import { sendEmail } from '../utilBackend/resend.js';
 
-// Endpoints =====================================================================================
-
 router.get("/status", (req, res) => {
     if (req.session.userId) {
         return res.status(200).send({ 
@@ -31,7 +29,7 @@ router.post("/signUp", async (req, res) => {
     const hashedPassword = await hashing.hashPassword(password);
     
     try {
-        await db.run('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', [username, email, hashedPassword]);
+        await db.run("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", username, email, hashedPassword);
 
         await sendEmail(
             email,
@@ -42,7 +40,7 @@ router.post("/signUp", async (req, res) => {
         return res.status(500).send({ data: "Something went wrong", error })
     }
 
-    return res.status(201).send({ data: "Account has been created" });
+    return res.status(200).send({ data: "Account has been created" });
 });
 
 router.delete("/signOut", (req, res) => {
@@ -50,7 +48,7 @@ router.delete("/signOut", (req, res) => {
         if (error)  {
             res.status(500).send({ data: "Sign out failed" })
         } else {
-            res.clearCookie('connect.sid'); 
+            res.clearCookie("connect.sid"); 
             res.send({ data: "Signed out successfully" });
         }
     });

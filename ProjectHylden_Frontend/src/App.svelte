@@ -17,7 +17,6 @@
   import Admin from './components/Admin/Admin.svelte';
   import ProtectedAdminRoute from './components/ProtectedAdminRoute/ProtectedAdminRoute.svelte';
   
-
   let socket = null;
 
   $effect(() => {

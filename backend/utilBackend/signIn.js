@@ -4,7 +4,7 @@ import hashing from '../utilBackend/hashing.js';
 export async function signIn (req, res, next)   {
     const { email, password } = req.body;
 
-    const user = await db.get('SELECT * FROM users WHERE email = ?', email);
+    const user = await db.get("SELECT * FROM users WHERE email = ?", email);
 
     try {
         if (!user)  {

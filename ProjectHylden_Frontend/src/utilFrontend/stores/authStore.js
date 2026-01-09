@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { API_URL } from '../constants';
 
 const initialUser = {
     isAuthenticated: false,
@@ -22,7 +23,7 @@ export const clientLogout = () => {
 };
 
 export async function checkAuthStatus() {
-        const response = await fetch('http://localhost:8080/status', { credentials: 'include' });
+        const response = await fetch(`${API_URL}/status`, { credentials: 'include' });
         const data = await response.json();
 
         if (data.isAuthenticated) {

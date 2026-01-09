@@ -23,8 +23,7 @@ db.exec(`
         title TEXT NOT NULL,
         description TEXT,
         category_id INTEGER, 
-        created_at TEXT NOT NULL,
-        updated_at TEXT DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
         FOREIGN KEY (category_id) REFERENCES categories(id) 
     );

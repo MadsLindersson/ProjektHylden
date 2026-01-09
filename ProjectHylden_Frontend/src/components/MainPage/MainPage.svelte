@@ -3,7 +3,7 @@
     import CategoriesBar from '../CategoriesBar';
     import PostCard from '../PostCard';
     import Post from '../Post';
-  import { API_URL } from "../../utilFrontend/constants";
+    import { API_URL } from "../../utilFrontend/constants";
 
     let posts = $state([]);
 
@@ -20,7 +20,8 @@
             const matchesCategory = chosenCategory === "all" || post.category_name === chosenCategory;
 
             const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                                 post.description?.toLowerCase().includes(searchQuery.toLowerCase());
+                                 post.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                 post.username.toLowerCase().includes(searchQuery.toLowerCase());
 
             return matchesCategory && matchesSearch;
         })

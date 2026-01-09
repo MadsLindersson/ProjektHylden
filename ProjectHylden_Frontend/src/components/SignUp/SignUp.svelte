@@ -1,6 +1,7 @@
 <script>
     import { Link, navigate } from 'svelte-routing';
     import { accountCreated, pwNotAMatch, somethingWentWrong, emailOrUsernameExists } from '../../utilFrontend/toastr.js';
+    import { API_URL } from '../../utilFrontend/constants.js';
 
     let username = $state("");
     let email = $state("");
@@ -22,7 +23,7 @@
         };
 
         try {
-            const response = await fetch ("http://localhost:8080/signUp", {
+            const response = await fetch (`${API_URL}/signUp`, {
                 method: "POST",
                 credentials: "include",
                 headers: {

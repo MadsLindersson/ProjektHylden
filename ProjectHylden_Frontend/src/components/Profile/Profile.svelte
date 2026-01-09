@@ -36,7 +36,7 @@
     );
 
     async function handleGetUser ()    {
-        const response = await fetch(`http://localhost:8080/users/${userId}`, {
+        const response = await fetch(`${API_URL}/users/${userId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -50,7 +50,7 @@
     }
 
         async function handleGetPosts ()    {
-        const response = await fetch(`http://localhost:8080/posts/${userId}`, {
+        const response = await fetch(`${API_URL}/posts/${userId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"

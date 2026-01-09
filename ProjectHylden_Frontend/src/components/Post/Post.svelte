@@ -3,6 +3,7 @@
     import { handlePostImageError, handleProfileImageError } from "../../utilFrontend/imageErrors.js";
     import { authStore } from "../../utilFrontend/stores/authStore.js";
     import { imageDeleted, postDeleted } from "../../utilFrontend/toastr.js";
+    import { Link } from "svelte-routing";
 
     let { post, onclose, onDelete } = $props();
 
@@ -147,7 +148,7 @@
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             />
                         </button>
-                        {#if $authStore.userRole === "admin"}
+                        {#if $authStore.userRole === "admin" || $authStore.userRole === "moderator"}
                             <button 
                                 onclick={() => {handleDeleteImage(img.id)}}
                                 class="absolute top-2 right-2 p-1.5 bg-red-500/80 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 cursor-pointer shadow-lg"
@@ -199,10 +200,12 @@
 
         <div class="w-full md:w-[380px] flex flex-col bg-[#1C1715] h-full border-l border-white/5">
             <header class="p-5 flex items-center justify-between flex-shrink-0">
-                <div class="flex items-center gap-3">
-                    <img src={`${API_URL}${post.profile_pic_url}`} onerror={handleProfileImageError} alt="User Avatar" class="w-10 h-10 rounded-full border border-white/10" />
+                <Link to="/profile/{post.user_id}" class="flex items-center gap-3">
+                    <img src={`${API_URL}${post.profile_pic_url}`} 
+                    onerror={handleProfileImageError} alt="User Avatar" 
+                    class="w-10 h-10 rounded-full border border-white/10" />
                     <span class="text-white font-medium text-sm">{post.username}</span>
-                </div>
+                </Link>
                 <button aria-label="Close button" onclick={onclose} class="w-8 h-8 flex items-center justify-center rounded-full bg-black/20 text-gray-400 cursor-pointer hover:text-white transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
@@ -210,7 +213,7 @@
 
             <div class="px-5 flex-1 overflow-y-auto custom-scrollbar pb-5">
                 <div class="relative border border-white/20 rounded-2xl p-5 mb-4">
-                    {#if $authStore.userRole === "admin"}
+                    {#if $authStore.userRole === "admin" || $authStore.userRole === "moderator"}
                         <button 
                             onclick={handleDeletePost}
                             class="absolute top-4 right-4 p-2 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all duration-200 cursor-pointer"

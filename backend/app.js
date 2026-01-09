@@ -43,7 +43,6 @@ io.on("connection", (socket) => {
 
   if (userId) {
     onlineUsers.set(userId, socket.id);
-    console.log(`UserId ${userId} linked to socket ${socket.id}`);
   }
 
   socket.on("disconnect", () => {

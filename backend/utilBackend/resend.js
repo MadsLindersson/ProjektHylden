@@ -5,7 +5,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function sendEmail(to, subject, html) {
   try {
     const response = await resend.emails.send({
-      //This is a test domain that can only send to my own email adress.
+      //This is a test domain that can only send to my own email address.
       from: "sandbox@resend.dev",
       to: "authmanii@outlook.com",
       subject,

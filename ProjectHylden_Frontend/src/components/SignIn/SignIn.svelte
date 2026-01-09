@@ -2,6 +2,7 @@
     import { Link, navigate } from 'svelte-routing';
     import { signInNotification, somethingWentWrong } from '../../utilFrontend/toastr.js';
     import { login } from '../../utilFrontend/stores/authStore.js';
+    import { API_URL } from '../../utilFrontend/constants.js';
 
     let email = $state("");
     let password = $state("");
@@ -14,7 +15,7 @@
         };
 
         try {
-            const response = await fetch ("http://localhost:8080/auth/signIn", {
+            const response = await fetch (`${API_URL}/auth/signIn`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
