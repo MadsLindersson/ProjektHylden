@@ -163,10 +163,8 @@ router.post("/posts/:userId", uploadPostPicture.array("postImages"), async (req,
         for (let i = 0; i < req.files.length; i++) {
           const imageUrl = `/uploads/postImages/${req.files[i].filename}`;
 
-          await db.run(
-            `INSERT INTO post_images (post_id, image_url, order_index) 
-                     VALUES (?, ?, ?)`,
-            [postId, imageUrl, i]
+          await db.run("INSERT INTO post_images (post_id, image_url, order_index) VALUES (?, ?, ?)",
+            postId, imageUrl, i
           );
         }
       }
@@ -184,10 +182,8 @@ router.delete("/posts/:postId", authCheck, async (req, res) => {
     const postId = req.params.postId;
 
     const postResult = await db.run("DELETE FROM posts WHERE id = ?", postId);
-    const postImgResult = await db.run(
-      "DELETE FROM post_images WHERE post_id = ?",
-      postId
-    );
+
+    const postImgResult = await db.run("DELETE FROM post_images WHERE post_id = ?", postId);
 
     if (postResult.changes !== 0 && postImgResult.changes !== 0) {
       res.status(200).send({ data: "Post deleted" });
@@ -204,10 +200,7 @@ router.delete("/images/:imageId", authCheck, async (req, res) => {
   try {
     const imageId = req.params.imageId;
 
-    const result = await db.run(
-      "DELETE FROM post_images WHERE id = ?",
-      imageId
-    );
+    const result = await db.run("DELETE FROM post_images WHERE id = ?", imageId);
 
     if (result.changes !== 0) {
       res.status(200).send({ data: "Image deleted" });
@@ -225,20 +218,13 @@ router.delete("/likes/:postId/:userId", sessionCheck, async (req, res) => {
     const postId = req.params.postId;
     const userId = req.params.userId;
 
-    const result = await db.run(
-      "DELETE FROM likes WHERE post_id = ? AND user_id = ?",
-      postId,
-      userId
-    );
+    const result = await db.run("DELETE FROM likes WHERE post_id = ? AND user_id = ?", postId, userId);
 
     if (result.changes === 0) {
       return res.status(500).send({ data: "Like not found" });
     }
 
-    const newCount = await db.get(
-      "SELECT COUNT(*) as count FROM likes WHERE post_id = ?",
-      postId
-    );
+    const newCount = await db.get("SELECT COUNT(*) as count FROM likes WHERE post_id = ?", postId);
 
     res.status(200).send({ data: "Post unliked", newCount: newCount.count });
   } catch (error) {
