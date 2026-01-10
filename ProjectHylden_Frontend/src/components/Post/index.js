@@ -1,1 +1,1 @@
-export { default } from './Post.svelte';
+export { default } from "./Post.svelte";

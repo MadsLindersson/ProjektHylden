@@ -1,1 +1,1 @@
-export { default } from './CategoriesBar.svelte';
+export { default } from "./CategoriesBar.svelte";

@@ -1,1 +1,1 @@
-export { default } from './PostCard.svelte';
+export { default } from "./PostCard.svelte";

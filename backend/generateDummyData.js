@@ -1,12 +1,12 @@
-import 'dotenv/config';
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
-import hashing from './utilBackend/hashing.js';
+import "dotenv/config";
+import sqlite3 from "sqlite3";
+import { open } from "sqlite";
+import hashing from "./utilBackend/hashing.js";
 
 async function seed() {
     const db = await open({
-        filename: './projekt_hylden', 
-        driver: sqlite3.Database
+        filename: "./projekt_hylden",
+        driver: sqlite3.Database,
     });
 
     console.log("🌱 Starting seed...");
@@ -22,15 +22,31 @@ async function seed() {
 
     // 2. Generate 20 Users (First one is Admin)
     const usernames = [
-        "Admin", "PixelPirate", "VividCanvas", "DesignDrifter", "Articulated", 
-        "SkylineSketcher", "NeonNoir", "InkInspired", "VectorVibe", "MotionMaster", 
-        "CreativeCactus", "StudioSpirit", "GraphixGuru", "MinimalMads", "BoldBrush", 
-        "DigitalDreamer", "LayerLogic", "AbstractAura", "PurePixel", "FrameFocus"
+        "Admin",
+        "PixelPirate",
+        "VividCanvas",
+        "DesignDrifter",
+        "Articulated",
+        "SkylineSketcher",
+        "NeonNoir",
+        "InkInspired",
+        "VectorVibe",
+        "MotionMaster",
+        "CreativeCactus",
+        "StudioSpirit",
+        "GraphixGuru",
+        "MinimalMads",
+        "BoldBrush",
+        "DigitalDreamer",
+        "LayerLogic",
+        "AbstractAura",
+        "PurePixel",
+        "FrameFocus",
     ];
 
     for (let i = 1; i <= usernames.length; i++) {
-        const isAdmin = usernames[i-1] === "Admin";
-        
+        const isAdmin = usernames[i - 1] === "Admin";
+
         await db.run(
             `INSERT INTO users (username, email, password, profile_pic_url, bio, role) 
              VALUES (?, ?, ?, ?, ?, ?)`,
@@ -40,7 +56,7 @@ async function seed() {
                 isAdmin ? adminPassword : commonPassword, // Specific password for admin
                 `/uploads/profilePictures/profilePic${i}.jpg`,
                 isAdmin ? "System Administrator." : `Professional creator specialized in Arts.`,
-                isAdmin ? "admin" : "creator" // Sets the role for your UI permissions
+                isAdmin ? "admin" : "creator", // Sets the role for your UI permissions
             ]
         );
     }
@@ -48,9 +64,21 @@ async function seed() {
 
     // 3. Generate 60 Posts
     const titles = [
-        "Golden Hour", "Cyberpunk Alley", "Minimalist Study", "The Lost City", "Geometric Bliss",
-        "Over the Horizon", "Neon Dreams", "Static Silence", "Fluid Motion", "Industrial Rust",
-        "Midnight Blue", "Organic Patterns", "Vector Landscape", "Concrete Jungle", "Soft Shadows"
+        "Golden Hour",
+        "Cyberpunk Alley",
+        "Minimalist Study",
+        "The Lost City",
+        "Geometric Bliss",
+        "Over the Horizon",
+        "Neon Dreams",
+        "Static Silence",
+        "Fluid Motion",
+        "Industrial Rust",
+        "Midnight Blue",
+        "Organic Patterns",
+        "Vector Landscape",
+        "Concrete Jungle",
+        "Soft Shadows",
     ];
 
     for (let i = 1; i <= 60; i++) {
@@ -68,11 +96,11 @@ async function seed() {
         const postId = result.lastID;
 
         // --- ADD IMAGES PER POST (Randomly 1 to 5) ---
-        const imgCount = Math.floor(Math.random() * 5) + 1; 
+        const imgCount = Math.floor(Math.random() * 5) + 1;
 
         for (let j = 0; j < imgCount; j++) {
-            const randomDummyIndex = Math.floor(Math.random() * 60) + 1; 
-            
+            const randomDummyIndex = Math.floor(Math.random() * 60) + 1;
+
             await db.run(
                 `INSERT INTO post_images (post_id, image_url, order_index) 
                  VALUES (?, ?, ?)`,
@@ -91,19 +119,19 @@ async function seed() {
         }
 
         for (const uId of likers) {
-            await db.run(
-                "INSERT OR IGNORE INTO likes (post_id, user_id) VALUES (?, ?)",
-                [pId, uId]
-            );
+            await db.run("INSERT OR IGNORE INTO likes (post_id, user_id) VALUES (?, ?)", [
+                pId,
+                uId,
+            ]);
         }
     }
-    
+
     console.log("✅ Random likes distributed.");
     console.log("🚀 Database successfully seeded!");
     process.exit(0);
 }
 
-seed().catch(err => {
+seed().catch((err) => {
     console.error("❌ Seed failed:", err);
     process.exit(1);
 });

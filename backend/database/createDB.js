@@ -1,4 +1,4 @@
-import db from './connection.js';
+import db from "./connection.js";
 
 db.exec(`
     CREATE TABLE users (

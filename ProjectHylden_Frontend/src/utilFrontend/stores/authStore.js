@@ -1,10 +1,10 @@
-import { writable } from 'svelte/store';
-import { API_URL } from '../constants';
+import { writable } from "svelte/store";
+import { API_URL } from "../constants";
 
 const initialUser = {
     isAuthenticated: false,
     userId: null,
-    statusChecked: false
+    statusChecked: false,
 };
 
 export const authStore = writable(initialUser);
@@ -23,16 +23,16 @@ export const clientLogout = () => {
 };
 
 export async function checkAuthStatus() {
-        const response = await fetch(`${API_URL}/status`, { credentials: 'include' });
-        const data = await response.json();
+    const response = await fetch(`${API_URL}/status`, { credentials: "include" });
+    const data = await response.json();
 
-        if (data.isAuthenticated) {
-            login(data.userId, data.userRole);
-        } else {
-            authStore.update(state => ({
-                ...state,
-                isAuthenticated: false,
-                statusChecked: true
-            }));
-        }
+    if (data.isAuthenticated) {
+        login(data.userId, data.userRole);
+    } else {
+        authStore.update((state) => ({
+            ...state,
+            isAuthenticated: false,
+            statusChecked: true,
+        }));
     }
+}

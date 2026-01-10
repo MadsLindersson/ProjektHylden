@@ -1,1 +1,1 @@
-export { default } from './ProtectedRoute.svelte';
+export { default } from "./ProtectedRoute.svelte";

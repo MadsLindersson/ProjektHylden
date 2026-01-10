@@ -1,15 +1,15 @@
-export function adminCheck (req, res, next)   {
-    if (req.session.userRole === "admin")   {
+export function adminCheck(req, res, next) {
+    if (req.session.userRole === "admin") {
         next();
-    } else  {
+    } else {
         return res.status(401).send({ data: "Unauthorized access" });
     }
 }
 
-export function authCheck (req, res, next)   {
-    if (req.session.userRole === "admin" || req.session.userRole === "moderator")   {
+export function authCheck(req, res, next) {
+    if (req.session.userRole === "admin" || req.session.userRole === "moderator") {
         next();
-    } else  {
+    } else {
         return res.status(401).send({ data: "Unauthorized access" });
     }
 }

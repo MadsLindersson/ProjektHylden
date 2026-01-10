@@ -1,1 +1,1 @@
-export { default } from './SignUp.svelte';
+export { default } from "./SignUp.svelte";

@@ -1,1 +1,1 @@
-export { default } from './EditProfile.svelte';
+export { default } from "./EditProfile.svelte";

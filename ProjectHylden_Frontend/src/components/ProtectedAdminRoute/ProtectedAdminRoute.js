@@ -1,1 +1,1 @@
-export { default } from './ProtectedAdminRoute.svelte';
+export { default } from "./ProtectedAdminRoute.svelte";

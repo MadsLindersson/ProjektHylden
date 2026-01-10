@@ -6,8 +6,8 @@ import { uploadProfilePicture } from "../utilBackend/multerConfig.js";
 import { adminCheck } from "../utilBackend/roleChecks.js";
 
 router.get("/users", async (req, res) => {
-  try {
-    const users = await db.all(`
+    try {
+        const users = await db.all(`
             SELECT 
             users.id, 
             users.username, 
@@ -21,98 +21,90 @@ router.get("/users", async (req, res) => {
             GROUP BY users.id
             ORDER BY post_count DESC`);
 
-    res.send({ users: users });
-  } catch (error) {
-    console.error(err);
-    res.status(500).send({ error: "Database error" });
-  }
+        res.send({ users: users });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: "Database error" });
+    }
 });
 
 router.get("/users/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const user = await db.get("SELECT * FROM users WHERE id = ?", id);
+    try {
+        const id = req.params.id;
+        const user = await db.get("SELECT * FROM users WHERE id = ?", id);
 
-    if (!user) {
-      return res.status(404).send({ error: "User not found" });
+        if (!user) {
+            return res.status(404).send({ error: "User not found" });
+        }
+
+        res.send({ user: user });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ error: "Database error" });
     }
-
-    res.send({ user: user });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ error: "Database error" });
-  }
 });
 
-router.patch(
-  "/users/:id",
-  uploadProfilePicture.single("profilePic"),
-  async (req, res) => {
+router.patch("/users/:id", uploadProfilePicture.single("profilePic"), async (req, res) => {
     try {
-      const bio = req.body.bio;
-      const id = req.params.id;
+        const bio = req.body.bio;
+        const id = req.params.id;
 
-      let profilePicUrl = null;
+        let profilePicUrl = null;
 
-      if (req.file) {
-        profilePicUrl = `/uploads/profilePictures/${req.file.filename}`;
-      }
+        if (req.file) {
+            profilePicUrl = `/uploads/profilePictures/${req.file.filename}`;
+        }
 
-      const result = await db.run(
-        `UPDATE users SET bio = COALESCE(?, bio), profile_pic_url = COALESCE(?, profile_pic_url) 
+        const result = await db.run(
+            `UPDATE users SET bio = COALESCE(?, bio), profile_pic_url = COALESCE(?, profile_pic_url) 
              WHERE id = ?`,
-        [bio, profilePicUrl, id]
-      );
+            [bio, profilePicUrl, id]
+        );
 
-      if (result.changes !== 0) {
-        res.status(200).send({ data: "User updated" });
-      } else {
-        res.status(500).send({ data: "Something went wrong" });
-      }
+        if (result.changes !== 0) {
+            res.status(200).send({ data: "User updated" });
+        } else {
+            res.status(500).send({ data: "Something went wrong" });
+        }
     } catch (error) {
-      console.error(error);
-      res.status(500).send({ error: "Database error" });
+        console.error(error);
+        res.status(500).send({ error: "Database error" });
     }
-  }
-);
+});
 
 router.patch("/users/:id/role", adminCheck, async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const userRole = req.body.userRole;
+    try {
+        const userId = req.params.id;
+        const userRole = req.body.userRole;
 
-    const result = await db.run(
-      `UPDATE users SET role = ? WHERE id = ?`,
-      userRole,
-      userId
-    );
+        const result = await db.run(`UPDATE users SET role = ? WHERE id = ?`, userRole, userId);
 
-    if (result.changes !== 0) {
-      res.status(200).send({ data: "User updated" });
-    } else {
-      res.status(500).send({ data: "Something went wrong" });
+        if (result.changes !== 0) {
+            res.status(200).send({ data: "User updated" });
+        } else {
+            res.status(500).send({ data: "Something went wrong" });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: "Database error" });
     }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ error: "Database error" });
-  }
 });
 
 router.delete("/users/:id", adminCheck, async (req, res) => {
-  try {
-    const userId = req.params.id;
+    try {
+        const userId = req.params.id;
 
-    const result = await db.run("DELETE FROM users WHERE id = ?", userId);
+        const result = await db.run("DELETE FROM users WHERE id = ?", userId);
 
-    if (result.changes !== 0) {
-      res.status(200).send({ data: "User delete" });
-    } else {
-      res.status(500).send({ data: "Something went wrong" });
+        if (result.changes !== 0) {
+            res.status(200).send({ data: "User delete" });
+        } else {
+            res.status(500).send({ data: "Something went wrong" });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: "Database error" });
     }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ error: "Database error" });
-  }
 });
 
 export default router;

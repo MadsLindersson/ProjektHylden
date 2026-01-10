@@ -1,1 +1,1 @@
-export { default } from './Admin.svelte';
+export { default } from "./Admin.svelte";

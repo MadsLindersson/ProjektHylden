@@ -1,11 +1,11 @@
 <script>
-    import { authStore } from '../../utilFrontend/stores/authStore.js';
-    import { navigate } from 'svelte-routing';
+    import { authStore } from "../../utilFrontend/stores/authStore.js";
+    import { navigate } from "svelte-routing";
 
     let { children } = $props();
 
     $effect(() => {
-        if (!$authStore.isAuthenticated)    {
+        if (!$authStore.isAuthenticated) {
             navigate("/signin", { replace: true });
         }
     });

@@ -1,11 +1,11 @@
 <script>
-    import { authStore } from '../../utilFrontend/stores/authStore.js';
-    import { navigate } from 'svelte-routing';
+    import { authStore } from "../../utilFrontend/stores/authStore.js";
+    import { navigate } from "svelte-routing";
 
     let { children } = $props();
 
     $effect(() => {
-        if ($authStore.userRole !== "admin")    {
+        if ($authStore.userRole !== "admin") {
             navigate("/", { replace: true });
         }
     });
