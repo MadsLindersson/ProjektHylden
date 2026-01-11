@@ -1,5 +1,5 @@
 <script>
-    import { API_URL } from "../../utilFrontend/constants.js";
+    import { API_URL } from "../../utilFrontend/constantsFrontend.js";
     import {
         handlePostImageError,
         handleProfileImageError,
@@ -7,6 +7,7 @@
     import { authStore } from "../../utilFrontend/stores/authStore.js";
     import { imageDeleted, postDeleted } from "../../utilFrontend/toastr.js";
     import { Link } from "svelte-routing";
+    import { confirmDelete } from "../../utilFrontend/sweetAlert.js"
 
     let { post, onclose, onDelete } = $props();
 
@@ -30,37 +31,45 @@
     }
 
     async function handleDeletePost() {
-        const response = await fetch(`${API_URL}/posts/${post.id}`, {
-            method: "DELETE",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+        const result = await confirmDelete();
 
-        if (response.ok) {
-            postDeleted(true);
-            onclose();
-            onDelete(post.id);
-        } else {
-            postDeleted(false);
+        if (result.isConfirmed) {
+            const response = await fetch(`${API_URL}/posts/${post.id}`, {
+                method: "DELETE",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (response.ok) {
+                postDeleted(true);
+                onclose();
+                onDelete(post.id);
+            } else {
+                postDeleted(false);
+            }
         }
     }
 
     async function handleDeleteImage(imageId) {
-        const response = await fetch(`${API_URL}/images/${imageId}`, {
-            method: "DELETE",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+        const result = await confirmDelete();
+        
+        if (result.isConfirmed) {
+            const response = await fetch(`${API_URL}/images/${imageId}`, {
+                method: "DELETE",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
-        if (response.ok) {
-            imageDeleted(true);
-            images = images.filter((img) => img.id !== imageId);
-        } else {
-            imageDeleted(false);
+            if (response.ok) {
+                imageDeleted(true);
+                images = images.filter((img) => img.id !== imageId);
+            } else {
+                imageDeleted(false);
+            }
         }
     }
 

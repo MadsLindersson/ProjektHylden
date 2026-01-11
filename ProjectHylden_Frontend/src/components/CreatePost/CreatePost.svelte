@@ -2,7 +2,7 @@
     import { Link, navigate } from "svelte-routing";
     import { authStore } from "../../utilFrontend/stores/authStore.js";
     import { postCreated } from "../../utilFrontend/toastr.js";
-    import { API_URL } from "../../utilFrontend/constants.js";
+    import { API_URL } from "../../utilFrontend/constantsFrontend.js";
     import { handleGetCategories } from "../../utilFrontend/categories.js";
 
     let title = $state("");

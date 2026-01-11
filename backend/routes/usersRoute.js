@@ -31,15 +31,15 @@ router.get("/users", async (req, res) => {
 router.get("/users/:id", async (req, res) => {
     try {
         const id = req.params.id;
-        const user = await db.get("SELECT * FROM users WHERE id = ?", id);
+        const user = await db.get("SELECT * FROM users WHERE id = ?", [id]);
 
         if (!user) {
-            return res.status(404).send({ error: "User not found" });
+            return res.status(404).send({ data: "User not found" });
         }
 
-        res.send({ user: user });
-    } catch (err) {
-        console.error(err);
+        res.status(200).send({ user: user });
+    } catch (error) {
+        console.error(error);
         res.status(500).send({ error: "Database error" });
     }
 });
@@ -55,9 +55,7 @@ router.patch("/users/:id", uploadProfilePicture.single("profilePic"), async (req
             profilePicUrl = `/uploads/profilePictures/${req.file.filename}`;
         }
 
-        const result = await db.run(
-            `UPDATE users SET bio = COALESCE(?, bio), profile_pic_url = COALESCE(?, profile_pic_url) 
-             WHERE id = ?`,
+        const result = await db.run("UPDATE users SET bio = COALESCE(?, bio), profile_pic_url = COALESCE(?, profile_pic_url) WHERE id = ?",
             [bio, profilePicUrl, id]
         );
 
@@ -77,7 +75,7 @@ router.patch("/users/:id/role", adminCheck, async (req, res) => {
         const userId = req.params.id;
         const userRole = req.body.userRole;
 
-        const result = await db.run(`UPDATE users SET role = ? WHERE id = ?`, userRole, userId);
+        const result = await db.run("UPDATE users SET role = ? WHERE id = ?", [userRole, userId]);
 
         if (result.changes !== 0) {
             res.status(200).send({ data: "User updated" });
@@ -94,7 +92,7 @@ router.delete("/users/:id", adminCheck, async (req, res) => {
     try {
         const userId = req.params.id;
 
-        const result = await db.run("DELETE FROM users WHERE id = ?", userId);
+        const result = await db.run("DELETE FROM users WHERE id = ?", [userId]);
 
         if (result.changes !== 0) {
             res.status(200).send({ data: "User delete" });

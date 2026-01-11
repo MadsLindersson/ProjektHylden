@@ -2,7 +2,7 @@
     import { Link, navigate } from "svelte-routing";
     import { authStore, clientLogout } from "../../utilFrontend/stores/authStore.js";
     import { signOutNotification } from "../../utilFrontend/toastr.js";
-    import { API_URL } from "../../utilFrontend/constants.js";
+    import { API_URL } from "../../utilFrontend/constantsFrontend.js";
 
     async function handleSignOut() {
         const response = await fetch(`${API_URL}/signOut`, {

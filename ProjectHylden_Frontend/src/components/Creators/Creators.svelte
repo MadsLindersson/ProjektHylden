@@ -1,5 +1,5 @@
 <script>
-    import { API_URL } from "../../utilFrontend/constants.js";
+    import { API_URL } from "../../utilFrontend/constantsFrontend.js";
     import { Link } from "svelte-routing";
     import { handleProfileImageError } from "../../utilFrontend/imageErrors.js";
 

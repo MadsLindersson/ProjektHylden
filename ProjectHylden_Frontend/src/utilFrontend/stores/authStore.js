@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import { API_URL } from "../constants";
+import { API_URL } from "../constantsFrontend";
 
 const initialUser = {
     isAuthenticated: false,

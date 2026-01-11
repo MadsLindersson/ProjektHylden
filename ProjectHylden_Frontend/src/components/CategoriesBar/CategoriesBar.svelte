@@ -12,7 +12,7 @@
     });
 </script>
 
-<div class="flex space-x-3 overflow-x-auto pb-4 mb-12">
+<div class="flex space-x-3 overflow-x-auto pb-4 mb-12 custom-scrollbar">
     <button
         onclick={() => handleChoseCategory("all")}
         class="flex-shrink-0 font-medium py-2 px-4 rounded-lg shadow-lg transition duration-150 cursor-pointer
@@ -35,3 +35,19 @@
         </button>
     {/each}
 </div>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar {
+        height: 8px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #332a26;
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #443833;
+    }
+</style>

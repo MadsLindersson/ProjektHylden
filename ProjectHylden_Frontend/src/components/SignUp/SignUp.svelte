@@ -6,7 +6,7 @@
         somethingWentWrong,
         emailOrUsernameExists,
     } from "../../utilFrontend/toastr.js";
-    import { API_URL } from "../../utilFrontend/constants.js";
+    import { API_URL } from "../../utilFrontend/constantsFrontend.js";
 
     let username = $state("");
     let email = $state("");

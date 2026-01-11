@@ -1,2 +1,22 @@
 /* src/app.css */
 @import "tailwindcss";
+
+#toast-container > div {
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    opacity: 1 !important;
+    font-family: 'Inter', sans-serif;
+}
+
+#toast-container > .toast-success {
+    background-color: #ff6a0042 !important;
+}
+
+#toast-container > .toast-error {
+    background-color: #ff00003f !important;
+}
+
+.toast-progress {
+    background-color: rgba(255, 255, 255, 0.5) !important;
+    height: 3px !important;
+}

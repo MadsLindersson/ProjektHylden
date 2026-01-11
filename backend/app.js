@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { CLIENT_URL } from "./utilBackend/constantsBackend.js";
 
 import express from "express";
 const app = express();
@@ -6,7 +7,7 @@ const app = express();
 import cors from "cors";
 app.use(
     cors({
-        origin: "http://localhost:5173",
+        origin: `${CLIENT_URL}`,
         credentials: true,
     })
 );
@@ -29,7 +30,7 @@ import { Server } from "socket.io";
 
 export const io = new Server(server, {
     cors: {
-        origin: ["http://localhost:5173"],
+        origin: [`${CLIENT_URL}`],
         credentials: true,
     },
 });
@@ -88,7 +89,6 @@ app.use(
 );
 
 // Endpoints=========================================================================================
-
 import authenticationRoute from "./routes/authenticationRoute.js";
 app.use(authenticationRoute);
 
@@ -100,6 +100,10 @@ app.use(usersRoute);
 
 import categoryRoute from "./routes/categoryRoute.js";
 app.use(categoryRoute);
+
+app.all("/{*splat}", (req, res) => {
+    res.send({ data: "Nothing to see here" });
+});
 
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {

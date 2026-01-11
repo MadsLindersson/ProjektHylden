@@ -1,7 +1,8 @@
 <script>
-    import { API_URL } from "../../utilFrontend/constants.js";
+    import { API_URL } from "../../utilFrontend/constantsFrontend.js";
     import { handleProfileImageError } from "../../utilFrontend/imageErrors.js";
     import { userUpdated, userDeleted } from "../../utilFrontend/toastr.js";
+    import { confirmDelete } from "../../utilFrontend/sweetAlert.js"
 
     import NavBar from "../NavBar/NavBar.svelte";
 
@@ -45,20 +46,24 @@
     }
 
     async function handleDeleteUser(id) {
-        const response = await fetch(`${API_URL}/users/${id}`, {
-            method: "DELETE",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+        const result = await confirmDelete();
+        
+        if (result.isConfirmed) {
+            const response = await fetch(`${API_URL}/users/${id}`, {
+                method: "DELETE",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
-        if (response.ok) {
-            userDeleted(true);
+            if (response.ok) {
+                userDeleted(true);
 
-            users = users.filter((user) => user.id !== id);
-        } else {
-            userDeleted(false);
+                users = users.filter((user) => user.id !== id);
+            } else {
+                userDeleted(false);
+            }
         }
     }
 

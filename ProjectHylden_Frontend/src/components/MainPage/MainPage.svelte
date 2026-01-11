@@ -3,7 +3,7 @@
     import CategoriesBar from "../CategoriesBar";
     import PostCard from "../PostCard";
     import Post from "../Post";
-    import { API_URL } from "../../utilFrontend/constants";
+    import { API_URL } from "../../utilFrontend/constantsFrontend";
 
     let posts = $state([]);
 

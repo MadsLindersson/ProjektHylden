@@ -98,5 +98,14 @@ export function emailOrUsernameExists() {
 }
 
 toastr.options = {
-    positionClass: "toast-bottom-right",
+    "closeButton": false,
+    "debug": false,
+    "newestOnTop": true,
+    "progressBar": true, // Adds a nice timer line at the bottom
+    "positionClass": "toast-bottom-right",
+    "preventDuplicates": true,
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
 };

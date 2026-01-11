@@ -4,7 +4,7 @@
     import { authStore } from "./utilFrontend/stores/authStore.js";
     import { io } from "socket.io-client";
     import { postLiked } from "./utilFrontend/toastr.js";
-    import { API_URL } from "./utilFrontend/constants.js";
+    import { API_URL } from "./utilFrontend/constantsFrontend.js";
 
     import MainPage from "./components/MainPage";
     import SignIn from "./components/SignIn";

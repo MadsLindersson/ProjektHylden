@@ -1,7 +1,7 @@
 <script>
     import { Link } from "svelte-routing";
     import { authStore } from "../../utilFrontend/stores/authStore.js";
-    import { API_URL } from "../../utilFrontend/constants.js";
+    import { API_URL } from "../../utilFrontend/constantsFrontend.js";
     import { handleProfileImageError } from "../../utilFrontend/imageErrors.js";
 
     import NavBar from "../NavBar";

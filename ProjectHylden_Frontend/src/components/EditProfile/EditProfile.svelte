@@ -2,7 +2,7 @@
     import { Link, navigate } from "svelte-routing";
     import { authStore } from "../../utilFrontend/stores/authStore.js";
     import { profileUpdated } from "../../utilFrontend/toastr.js";
-    import { API_URL } from "../../utilFrontend/constants.js";
+    import { API_URL } from "../../utilFrontend/constantsFrontend.js";
 
     let { userId } = $props();
 

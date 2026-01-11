@@ -1,6 +1,6 @@
 <script>
     import { Link } from "svelte-routing";
-    import { API_URL } from "../../utilFrontend/constants.js";
+    import { API_URL } from "../../utilFrontend/constantsFrontend.js";
     import {
         handlePostImageError,
         handleProfileImageError,

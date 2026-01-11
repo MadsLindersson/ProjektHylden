@@ -2,7 +2,7 @@
     import { Link, navigate } from "svelte-routing";
     import { signInNotification, somethingWentWrong } from "../../utilFrontend/toastr.js";
     import { login } from "../../utilFrontend/stores/authStore.js";
-    import { API_URL } from "../../utilFrontend/constants.js";
+    import { API_URL } from "../../utilFrontend/constantsFrontend.js";
 
     let email = $state("");
     let password = $state("");

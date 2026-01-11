@@ -1,5 +1,7 @@
+import { API_URL } from "./constantsFrontend.js";
+
 export async function handleGetCategories() {
-    const response = await fetch("http://localhost:8080/categories", {
+    const response = await fetch(`${API_URL}/categories`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",

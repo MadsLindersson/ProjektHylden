@@ -4,7 +4,7 @@ import hashing from "../utilBackend/hashing.js";
 export async function signIn(req, res, next) {
     const { email, password } = req.body;
 
-    const user = await db.get("SELECT * FROM users WHERE email = ?", email);
+    const user = await db.get("SELECT * FROM users WHERE email = ?", [email]);
 
     try {
         if (!user) {
@@ -20,7 +20,7 @@ export async function signIn(req, res, next) {
             res.status(401).send({ data: "signIn information is incorrect, please try again" });
         }
     } catch (error) {
-        console.log("signIn error:", error);
+        console.error("signIn error:", error);
         return res.status(500).send({ data: "Internal server error" });
     }
 }
