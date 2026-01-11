@@ -1,13 +1,11 @@
 <script>
     import { API_URL } from "../../utilFrontend/constantsFrontend.js";
-    import {
-        handlePostImageError,
-        handleProfileImageError,
-    } from "../../utilFrontend/imageErrors.js";
+    import { handlePostImageError, handleProfileImageError } from "../../utilFrontend/imageErrors.js";
     import { authStore } from "../../utilFrontend/stores/authStore.js";
-    import { imageDeleted, postDeleted } from "../../utilFrontend/toastr.js";
+    import { imageDeleted, postDeleted, somethingWentWrong } from "../../utilFrontend/toastr.js";
     import { Link } from "svelte-routing";
-    import { confirmDelete } from "../../utilFrontend/sweetAlert.js"
+    import { confirmDelete } from "../../utilFrontend/sweetAlert.js";
+    import { onMount } from "svelte";
 
     let { post, onclose, onDelete } = $props();
 
@@ -18,93 +16,118 @@
     const closeBigView = () => (selectedIndex = null);
 
     async function handleGetImageUrls() {
-        const response = await fetch(`${API_URL}/imageurls/${post.id}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-
-        const data = await response.json();
-
-        images = data.imageUrls;
-    }
-
-    async function handleDeletePost() {
-        const result = await confirmDelete();
-
-        if (result.isConfirmed) {
-            const response = await fetch(`${API_URL}/posts/${post.id}`, {
-                method: "DELETE",
-                credentials: "include",
+        try {
+            const response = await fetch(`${API_URL}/imageurls/${post.id}`, {
+                method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                 },
             });
 
-            if (response.ok) {
-                postDeleted(true);
-                onclose();
-                onDelete(post.id);
-            } else {
-                postDeleted(false);
+            const data = await response.json();
+
+            images = data.imageUrls;
+        } catch (error) {
+            console.log("Something went wrong: ", error);
+            somethingWentWrong();
+        }
+    }
+
+    async function handleDeletePost() {
+        try {
+            const result = await confirmDelete();
+
+            if (result.isConfirmed) {
+                const response = await fetch(`${API_URL}/posts/${post.id}`, {
+                    method: "DELETE",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+
+                if (response.ok) {
+                    postDeleted(true);
+                    onclose();
+                    onDelete(post.id);
+                } else {
+                    postDeleted(false);
+                }
             }
+        } catch (error) {
+            console.log("Something went wrong: ", error);
+            somethingWentWrong();
         }
     }
 
     async function handleDeleteImage(imageId) {
-        const result = await confirmDelete();
-        
-        if (result.isConfirmed) {
-            const response = await fetch(`${API_URL}/images/${imageId}`, {
-                method: "DELETE",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+        try {
+            const result = await confirmDelete();
 
-            if (response.ok) {
-                imageDeleted(true);
-                images = images.filter((img) => img.id !== imageId);
-            } else {
-                imageDeleted(false);
+            if (result.isConfirmed) {
+                const response = await fetch(`${API_URL}/images/${imageId}`, {
+                    method: "DELETE",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+
+                if (response.ok) {
+                    imageDeleted(true);
+                    images = images.filter((img) => img.id !== imageId);
+                } else {
+                    imageDeleted(false);
+                }
             }
+        } catch (error) {
+            console.log("Something went wrong: ", error);
+            somethingWentWrong();
         }
     }
 
     async function handleLikePost() {
-        const response = await fetch(`${API_URL}/posts/like`, {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ postId: post.id, userId: $authStore.userId }),
-        });
+        try {
+            const response = await fetch(`${API_URL}/posts/like`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ postId: post.id, userId: $authStore.userId }),
+            });
 
-        if (response.ok) {
-            const data = await response.json();
-            post.likes_count = data.newCount;
+            if (response.ok) {
+                const data = await response.json();
+                post.likes_count = data.newCount;
 
-            post.user_has_liked = 1;
+                post.user_has_liked = 1;
+            }
+        } catch (error) {
+            console.log("Something went wrong: ", error);
+            somethingWentWrong();
         }
     }
 
     async function handleDeleteLike() {
-        const response = await fetch(`${API_URL}/likes/${post.id}/${$authStore.userId}`, {
-            method: "DELETE",
-            credentials: "include",
-            headers: {
-                "Content-type": "application/json",
-            },
-        });
+        try {
+            const response = await fetch(`${API_URL}/likes/${post.id}/${$authStore.userId}`, {
+                method: "DELETE",
+                credentials: "include",
+                headers: {
+                    "Content-type": "application/json",
+                },
+            });
 
-        if (response.ok) {
-            const data = await response.json();
-            post.likes_count = data.newCount;
+            if (response.ok) {
+                const data = await response.json();
+                post.likes_count = data.newCount;
 
-            post.user_has_liked = 0;
+                post.user_has_liked = 0;
+            }
+        } catch (error) {
+            console.log("Something went wrong: ", error);
+            somethingWentWrong();
         }
     }
 
@@ -124,8 +147,11 @@
         }
     }
 
-    $effect(() => {
+    onMount(() => {
         handleGetImageUrls();
+    });
+
+    $effect(() => {
         document.body.style.overflow = "hidden";
 
         return () => {
@@ -143,9 +169,7 @@
     <section
         class="bg-[#1C1715] w-full max-w-5xl h-[70vh] max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row border border-white/5"
     >
-        <section
-            class="flex-1 bg-[#141110] flex flex-col p-4 overflow-y-auto relative h-full custom-scrollbar"
-        >
+        <section class="flex-1 bg-[#141110] flex flex-col p-4 overflow-y-auto relative h-full custom-scrollbar">
             <div class="grid grid-cols-2 gap-4 h-fit">
                 {#each images as img, i}
                     <div class="relative group aspect-square">
@@ -170,12 +194,7 @@
                                 class="absolute top-2 right-2 p-1.5 bg-red-500/80 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 cursor-pointer shadow-lg"
                                 aria-label="Delete this image"
                             >
-                                <svg
-                                    class="w-4 h-4"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path
                                         stroke-linecap="round"
                                         stroke-linejoin="round"
@@ -190,22 +209,14 @@
             </div>
 
             {#if selectedIndex !== null}
-                <div
-                    class="absolute inset-0 z-[60] bg-[#141110] flex flex-col items-center justify-center p-4"
-                    role="dialog"
-                >
+                <div class="absolute inset-0 z-[60] bg-[#141110] flex flex-col items-center justify-center p-4" role="dialog">
                     <button
                         aria-label="Close button"
                         onclick={closeBigView}
                         class="absolute top-4 right-4 z-[70] p-2 bg-black/50 text-gray-400 rounded-full cursor-pointer hover:text-white transition-colors"
                     >
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                            ><path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"
-                            /></svg
+                            ><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg
                         >
                     </button>
 
@@ -215,17 +226,8 @@
                             onclick={prev}
                             class="absolute left-4 z-[70] p-3 bg-black/20 hover:bg-black/50 text-white rounded-full transition-colors cursor-pointer"
                         >
-                            <svg
-                                class="w-6 h-6"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                ><path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M15 19l-7-7 7-7"
-                                /></svg
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                ><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg
                             >
                         </button>
                         <button
@@ -233,17 +235,8 @@
                             onclick={next}
                             class="absolute right-4 z-[70] p-3 bg-black/20 hover:bg-black/50 text-white rounded-full transition-colors cursor-pointer"
                         >
-                            <svg
-                                class="w-6 h-6"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                ><path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M9 5l7 7-7 7"
-                                /></svg
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                ><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg
                             >
                         </button>
                     {/if}
@@ -254,9 +247,7 @@
                             style="transform: translateX(-{selectedIndex * 100}%);"
                         >
                             {#each images as img}
-                                <div
-                                    class="flex-shrink-0 w-full h-full flex items-center justify-center p-4"
-                                >
+                                <div class="flex-shrink-0 w-full h-full flex items-center justify-center p-4">
                                     <img
                                         src={`${API_URL}${img.image_url}`}
                                         onerror={handlePostImageError}
@@ -288,12 +279,7 @@
                     class="w-8 h-8 flex items-center justify-center rounded-full bg-black/20 text-gray-400 cursor-pointer hover:text-white transition-colors"
                 >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        ><path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
-                        /></svg
+                        ><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg
                     >
                 </button>
             </header>
@@ -306,12 +292,7 @@
                             class="absolute top-4 right-4 p-2 text-gray-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all duration-200 cursor-pointer"
                             aria-label="Delete post"
                         >
-                            <svg
-                                class="w-5 h-5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
@@ -325,21 +306,11 @@
                     <p class="text-gray-400 text-sm leading-relaxed mb-4">{post.description}</p>
 
                     <footer class="flex items-center gap-4 text-xs font-medium">
-                        <span
-                            class="bg-[#332A26] text-white px-4 py-1.5 rounded-full border border-white/5"
-                            >{post.category_name}</span
-                        >
+                        <span class="bg-[#332A26] text-white px-4 py-1.5 rounded-full border border-white/5">{post.category_name}</span>
 
                         <div class="flex items-center gap-1.5 text-gray-500">
-                            <svg
-                                class="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                />
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                             {new Date(post.created_at).toLocaleDateString("da-DK", {
                                 month: "long",
@@ -349,15 +320,8 @@
 
                         {#if $authStore.isAuthenticated}
                             {#if post.user_has_liked === 0}
-                                <button
-                                    onclick={handleLikePost}
-                                    class="group flex items-center gap-1.5 transition-all duration-200 cursor-pointer"
-                                >
-                                    <svg
-                                        class="w-6 h-6 text-gray-500 group-hover:text-red-500"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
+                                <button onclick={handleLikePost} class="group flex items-center gap-1.5 transition-all duration-200 cursor-pointer">
+                                    <svg class="w-6 h-6 text-gray-500 group-hover:text-red-500" stroke="currentColor" viewBox="0 0 24 24">
                                         <path
                                             stroke-linecap="round"
                                             stroke-linejoin="round"
@@ -365,20 +329,11 @@
                                             d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                                         />
                                     </svg>
-                                    <span class="text-xs font-bold text-gray-500"
-                                        >{post.likes_count || 0}</span
-                                    >
+                                    <span class="text-xs font-bold text-gray-500">{post.likes_count || 0}</span>
                                 </button>
                             {:else}
-                                <button
-                                    onclick={handleDeleteLike}
-                                    class="group flex items-center gap-1.5 transition-all duration-200 cursor-pointer"
-                                >
-                                    <svg
-                                        class="w-6 h-6 text-red-500 fill-red-500"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
+                                <button onclick={handleDeleteLike} class="group flex items-center gap-1.5 transition-all duration-200 cursor-pointer">
+                                    <svg class="w-6 h-6 text-red-500 fill-red-500" stroke="currentColor" viewBox="0 0 24 24">
                                         <path
                                             stroke-linecap="round"
                                             stroke-linejoin="round"
@@ -386,19 +341,12 @@
                                             d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                                         />
                                     </svg>
-                                    <span class="text-xs font-bold text-red-500"
-                                        >{post.likes_count || 0}</span
-                                    >
+                                    <span class="text-xs font-bold text-red-500">{post.likes_count || 0}</span>
                                 </button>
                             {/if}
                         {:else}
                             <div class="flex items-center gap-1.5 text-gray-500 opacity-70">
-                                <svg
-                                    class="w-6 h-6"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
+                                <svg class="w-6 h-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                     <path
                                         stroke-linecap="round"
                                         stroke-linejoin="round"

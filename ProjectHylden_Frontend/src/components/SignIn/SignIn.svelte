@@ -104,27 +104,18 @@
 
             <div class="text-center text-sm pt-4">
                 Don't have an account?
-                <Link
-                    to="/signup"
-                    class="text-[#EB7548] hover:text-[#E59E45] transition duration-150 font-medium cursor-pointer"
-                >
-                    Sign up
-                </Link>
+                <Link to="/signup" class="text-[#EB7548] hover:text-[#E59E45] transition duration-150 font-medium cursor-pointer">Sign up</Link>
             </div>
         </div>
 
         <div class="hidden lg:block lg:w-1/2 p-8 bg-gradient-to-r from-[#0D0B09] to-[#391E15]">
             <div class="h-full flex flex-col justify-center items-center text-center space-y-6">
                 <div class="w-full h-80 rounded-xl overflow-hidden shadow-2xl">
-                    <div
-                        class="w-full h-full bg-gradient-to-br from-purple-800 via-orange-500 to-indigo-900 opacity-90"
-                    ></div>
+                    <div class="w-full h-full bg-gradient-to-br from-purple-800 via-orange-500 to-indigo-900 opacity-90"></div>
                 </div>
 
                 <h2 class="text-2xl font-bold text-white">Showcase Your Creativity</h2>
-                <p class="text-gray-400 max-w-xs">
-                    Join artists and designers sharing their work with a passionate community.
-                </p>
+                <p class="text-gray-400 max-w-xs">Join artists and designers sharing their work with a passionate community.</p>
             </div>
         </div>
     </div>

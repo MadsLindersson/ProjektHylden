@@ -1,10 +1,7 @@
 <script>
     import { Link } from "svelte-routing";
     import { API_URL } from "../../utilFrontend/constantsFrontend.js";
-    import {
-        handlePostImageError,
-        handleProfileImageError,
-    } from "../../utilFrontend/imageErrors.js";
+    import { handlePostImageError, handleProfileImageError } from "../../utilFrontend/imageErrors.js";
 
     let { postItem, onSelect } = $props();
 </script>
@@ -21,9 +18,7 @@
             class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
         />
 
-        <div
-            class="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-black/60 to-transparent p-3 text-left pointer-events-none"
-        >
+        <div class="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-black/60 to-transparent p-3 text-left pointer-events-none">
             <h3 class="text-white font-semibold text-lg drop-shadow-md line-clamp-1">
                 {postItem.title}
             </h3>
@@ -32,15 +27,8 @@
 
     <div class="flex justify-between items-center p-3">
         <Link to="/profile/{postItem.user_id}" class="flex items-center space-x-2">
-            <img
-                class="w-6 h-6 rounded-full bg-red-500"
-                src={`${API_URL}${postItem.profile_pic_url}`}
-                onerror={handleProfileImageError}
-                alt=""
-            />
-            <span
-                class="text-sm font-medium text-gray-300 group-hover:text-white transition-colors"
-            >
+            <img class="w-6 h-6 rounded-full bg-red-500" src={`${API_URL}${postItem.profile_pic_url}`} onerror={handleProfileImageError} alt="" />
+            <span class="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">
                 {postItem.username}
             </span>
         </Link>

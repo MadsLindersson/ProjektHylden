@@ -4,7 +4,6 @@ import { API_URL } from "../constantsFrontend";
 const initialUser = {
     isAuthenticated: false,
     userId: null,
-    statusChecked: false,
 };
 
 export const authStore = writable(initialUser);
@@ -14,7 +13,6 @@ export const login = (userId, userRole) => {
         isAuthenticated: true,
         userId: userId,
         userRole: userRole,
-        statusChecked: true,
     });
 };
 
@@ -32,7 +30,6 @@ export async function checkAuthStatus() {
         authStore.update((state) => ({
             ...state,
             isAuthenticated: false,
-            statusChecked: true,
         }));
     }
 }

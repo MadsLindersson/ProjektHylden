@@ -1,9 +1,10 @@
 <script>
     import { Link, navigate } from "svelte-routing";
     import { authStore } from "../../utilFrontend/stores/authStore.js";
-    import { postCreated } from "../../utilFrontend/toastr.js";
+    import { postCreated, somethingWentWrong } from "../../utilFrontend/toastr.js";
     import { API_URL } from "../../utilFrontend/constantsFrontend.js";
     import { handleGetCategories } from "../../utilFrontend/categories.js";
+    import { onMount } from "svelte";
 
     let title = $state("");
     let description = $state("");
@@ -37,8 +38,9 @@
             } else {
                 postCreated(false);
             }
-        } catch (err) {
-            console.log("Something went wrong");
+        } catch (error) {
+            console.log("Something went wrong: ", error);
+            somethingWentWrong;
         }
     }
 
@@ -52,7 +54,7 @@
 
     let categories = $state([]);
 
-    $effect(() => {
+    onMount(() => {
         handleGetCategories().then((data) => {
             categories = data;
         });
@@ -100,9 +102,7 @@
                 </div>
 
                 <div class="space-y-1">
-                    <label for="description" class="text-sm font-medium"
-                        >Description <span class="text-gray-500">(optional)</span></label
-                    >
+                    <label for="description" class="text-sm font-medium">Description <span class="text-gray-500">(optional)</span></label>
                     <textarea
                         bind:value={description}
                         id="description"
@@ -146,21 +146,11 @@
                     for="image-upload"
                     class="w-full h-80 rounded-xl overflow-hidden shadow-2xl border-2 border-dashed border-gray-600 hover:border-[#F5AE55] transition duration-300 cursor-pointer flex items-center justify-center relative"
                 >
-                    <div
-                        class="w-full h-full bg-[#1C1715] flex flex-col items-center justify-center space-y-3 text-gray-400 p-4"
-                    >
+                    <div class="w-full h-full bg-[#1C1715] flex flex-col items-center justify-center space-y-3 text-gray-400 p-4">
                         {#if previewUrl}
-                            <img
-                                src={previewUrl}
-                                alt="Preview"
-                                class="w-full h-full object-cover"
-                            />
+                            <img src={previewUrl} alt="Preview" class="w-full h-full object-cover" />
 
-                            <div
-                                class="absolute top-2 right-2 bg-orange-500 text-black text-xs font-bold px-2 py-1 rounded"
-                            >
-                                New
-                            </div>
+                            <div class="absolute top-2 right-2 bg-orange-500 text-black text-xs font-bold px-2 py-1 rounded">New</div>
                         {:else}
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -180,15 +170,7 @@
                             <p class="text-sm">PNG, JPG</p>
                         {/if}
 
-                        <input
-                            type="file"
-                            id="image-upload"
-                            accept="image/*"
-                            class="hidden"
-                            required
-                            multiple
-                            bind:files
-                        />
+                        <input type="file" id="image-upload" accept="image/*" class="hidden" required multiple bind:files />
                     </div>
                 </label>
 

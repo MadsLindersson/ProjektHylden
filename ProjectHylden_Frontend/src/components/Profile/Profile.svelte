@@ -3,6 +3,8 @@
     import { authStore } from "../../utilFrontend/stores/authStore.js";
     import { API_URL } from "../../utilFrontend/constantsFrontend.js";
     import { handleProfileImageError } from "../../utilFrontend/imageErrors.js";
+    import { somethingWentWrong } from "../../utilFrontend/toastr.js";
+    import { onMount } from "svelte";
 
     import NavBar from "../NavBar";
     import CategoriesBar from "../CategoriesBar";
@@ -30,41 +32,49 @@
 
     let filteredPosts = $derived(
         posts.filter((post) => {
-            const matchesCategory =
-                chosenCategory === "all" || post.category_name === chosenCategory;
+            const matchesCategory = chosenCategory === "all" || post.category_name === chosenCategory;
 
             const matchesSearch =
-                post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                post.description?.toLowerCase().includes(searchQuery.toLowerCase());
+                post.title.toLowerCase().includes(searchQuery.toLowerCase()) || post.description?.toLowerCase().includes(searchQuery.toLowerCase());
 
             return matchesCategory && matchesSearch;
         })
     );
 
     async function handleGetUser() {
-        const response = await fetch(`${API_URL}/users/${userId}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+        try {
+            const response = await fetch(`${API_URL}/users/${userId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
-        const data = await response.json();
+            const data = await response.json();
 
-        user = data.user;
+            user = data.user;
+        } catch (error) {
+            console.log("Something went wrong: ", error);
+            somethingWentWrong();
+        }
     }
 
     async function handleGetPosts() {
-        const response = await fetch(`${API_URL}/posts/${userId}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+        try {
+            const response = await fetch(`${API_URL}/posts/${userId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
-        const data = await response.json();
+            const data = await response.json();
 
-        posts = data.posts;
+            posts = data.posts;
+        } catch (error) {
+            console.log("Something went wrong: ", error);
+            somethingWentWrong();
+        }
     }
 
     function onDelete(deletedId) {
@@ -84,7 +94,7 @@
         IsModalOpen = false;
     }
 
-    $effect(() => {
+    onMount(() => {
         if (userId) {
             handleGetUser();
             handleGetPosts();

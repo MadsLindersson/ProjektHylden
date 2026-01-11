@@ -2,6 +2,8 @@
     import { API_URL } from "../../utilFrontend/constantsFrontend.js";
     import { Link } from "svelte-routing";
     import { handleProfileImageError } from "../../utilFrontend/imageErrors.js";
+    import { somethingWentWrong } from "../../utilFrontend/toastr.js";
+    import { onMount } from "svelte";
 
     import NavBar from "../NavBar";
 
@@ -18,19 +20,24 @@
     );
 
     async function handleGetUsers() {
-        const response = await fetch(`${API_URL}/users`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+        try {
+            const response = await fetch(`${API_URL}/users`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
-        const data = await response.json();
+            const data = await response.json();
 
-        users = data.users;
+            users = data.users;
+        } catch (error) {
+            console.log("Something went wrong: ", error);
+            somethingWentWrong();
+        }
     }
 
-    $effect(() => {
+    onMount(() => {
         handleGetUsers();
     });
 </script>
@@ -40,9 +47,7 @@
 <div class="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto py-16 text-white">
     <header class="mb-10 space-y-2">
         <h1 class="text-4xl font-bold tracking-tight">Discover Creators</h1>
-        <p class="text-gray-400">
-            Explore the talented artists, designers, and creators who make this community special.
-        </p>
+        <p class="text-gray-400">Explore the talented artists, designers, and creators who make this community special.</p>
     </header>
 
     <div class="mb-12">

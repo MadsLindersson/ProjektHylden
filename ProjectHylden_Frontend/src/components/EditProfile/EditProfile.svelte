@@ -1,8 +1,9 @@
 <script>
     import { Link, navigate } from "svelte-routing";
     import { authStore } from "../../utilFrontend/stores/authStore.js";
-    import { profileUpdated } from "../../utilFrontend/toastr.js";
+    import { profileUpdated, somethingWentWrong } from "../../utilFrontend/toastr.js";
     import { API_URL } from "../../utilFrontend/constantsFrontend.js";
+    import { onMount } from "svelte";
 
     let { userId } = $props();
 
@@ -11,16 +12,21 @@
     let files = $state();
 
     async function handleGetUser() {
-        const response = await fetch(`${API_URL}/users/${userId}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+        try {
+            const response = await fetch(`${API_URL}/users/${userId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
-        const data = await response.json();
+            const data = await response.json();
 
-        user = data.user;
+            user = data.user;
+        } catch (error) {
+            console.log("Something went wrong: ", error);
+            somethingWentWrong();
+        }
     }
 
     async function handleSubmit(event) {
@@ -46,12 +52,13 @@
             } else {
                 profileUpdated(false);
             }
-        } catch (err) {
-            console.log("Something went wrong");
+        } catch (error) {
+            console.log("Something went wrong: ", error);
+            somethingWentWrong();
         }
     }
 
-    $effect(() => {
+    onMount(() => {
         handleGetUser();
     });
 
@@ -122,25 +129,13 @@
                     for="image-upload"
                     class="w-full h-80 rounded-xl overflow-hidden shadow-2xl border-2 border-dashed border-gray-600 hover:border-[#F5AE55] transition duration-300 cursor-pointer flex items-center justify-center relative"
                 >
-                    <div
-                        class="w-full h-full bg-[#1C1715] flex flex-col items-center justify-center space-y-3 text-gray-400 p-4"
-                    >
+                    <div class="w-full h-full bg-[#1C1715] flex flex-col items-center justify-center space-y-3 text-gray-400 p-4">
                         {#if previewUrl}
-                            <img
-                                src={previewUrl}
-                                alt="Preview"
-                                class="w-full h-full object-cover"
-                            />
+                            <img src={previewUrl} alt="Preview" class="w-full h-full object-cover" />
 
-                            <div
-                                class="absolute top-2 right-2 bg-orange-500 text-black text-xs font-bold px-2 py-1 rounded"
-                            >
-                                New
-                            </div>
+                            <div class="absolute top-2 right-2 bg-orange-500 text-black text-xs font-bold px-2 py-1 rounded">New</div>
                         {:else}
-                            <div
-                                class="w-full h-full bg-[#1C1715] flex flex-col items-center justify-center space-y-3 text-gray-400 p-4"
-                            >
+                            <div class="w-full h-full bg-[#1C1715] flex flex-col items-center justify-center space-y-3 text-gray-400 p-4">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
@@ -155,9 +150,7 @@
                                         d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
                                     />
                                 </svg>
-                                <p class="text-base font-semibold">
-                                    Click to upload profile picture
-                                </p>
+                                <p class="text-base font-semibold">Click to upload profile picture</p>
                                 <p class="text-sm">PNG, JPG</p>
                             </div>
                         {/if}
@@ -165,13 +158,7 @@
                         <p class="text-base font-semibold">Click to upload profile picture</p>
                         <p class="text-sm">PNG, JPG</p>
 
-                        <input
-                            type="file"
-                            id="image-upload"
-                            accept="image/*"
-                            class="hidden"
-                            bind:files
-                        />
+                        <input type="file" id="image-upload" accept="image/*" class="hidden" bind:files />
                     </div>
                 </label>
 

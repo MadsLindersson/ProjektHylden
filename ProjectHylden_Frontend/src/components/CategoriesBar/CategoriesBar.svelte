@@ -1,11 +1,12 @@
 <script>
+    import { onMount } from "svelte";
     import { handleGetCategories } from "../../utilFrontend/categories.js";
 
     const { chosenCategory, handleChoseCategory } = $props();
 
     let categories = $state([]);
 
-    $effect(() => {
+    onMount(() => {
         handleGetCategories().then((data) => {
             categories = data;
         });

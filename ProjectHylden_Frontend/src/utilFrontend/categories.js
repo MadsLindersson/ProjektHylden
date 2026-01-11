@@ -1,14 +1,20 @@
 import { API_URL } from "./constantsFrontend.js";
+import { somethingWentWrong } from "./toastr.js";
 
 export async function handleGetCategories() {
-    const response = await fetch(`${API_URL}/categories`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
+    try {
+        const response = await fetch(`${API_URL}/categories`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
 
-    const data = await response.json();
+        const data = await response.json();
 
-    return data.categories;
+        return data.categories;
+    } catch (error) {
+        console.log("Something went wrong: ", error);
+        somethingWentWrong();
+    }
 }

@@ -1,9 +1,12 @@
 <script>
+    import { API_URL } from "../../utilFrontend/constantsFrontend.js";
+    import { somethingWentWrong } from "../../utilFrontend/toastr.js";
+    import { onMount } from "svelte";
+
     import NavBar from "../NavBar";
     import CategoriesBar from "../CategoriesBar";
     import PostCard from "../PostCard";
     import Post from "../Post";
-    import { API_URL } from "../../utilFrontend/constantsFrontend";
 
     let posts = $state([]);
 
@@ -17,8 +20,7 @@
 
     let filteredPosts = $derived(
         posts.filter((post) => {
-            const matchesCategory =
-                chosenCategory === "all" || post.category_name === chosenCategory;
+            const matchesCategory = chosenCategory === "all" || post.category_name === chosenCategory;
 
             const matchesSearch =
                 post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -30,17 +32,22 @@
     );
 
     async function handleGetPosts() {
-        const response = await fetch(`${API_URL}/posts`, {
-            method: "GET",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+        try {
+            const response = await fetch(`${API_URL}/posts`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
-        const data = await response.json();
+            const data = await response.json();
 
-        posts = data.posts;
+            posts = data.posts;
+        } catch (error) {
+            console.log("Something went wrong: ", error);
+            somethingWentWrong();
+        }
     }
 
     function onSelect(postFromPostCard) {
@@ -60,7 +67,7 @@
         chosenCategory = category;
     }
 
-    $effect(() => {
+    onMount(() => {
         handleGetPosts();
     });
 </script>
@@ -71,15 +78,10 @@
     <header class="text-center mb-6">
         <h1 class="text-6xl sm:text-7xl font-extrabold tracking-tight mb-4 text-white">
             Share Your
-            <span
-                class="bg-clip-text text-transparent bg-gradient-to-r from-[#EB7548] to-[#F5AE55]"
-            >
-                Creative Vision
-            </span>
+            <span class="bg-clip-text text-transparent bg-gradient-to-r from-[#EB7548] to-[#F5AE55]"> Creative Vision </span>
         </h1>
         <p class="text-xl text-gray-400 max-w-3xl mx-auto">
-            Join a community of artists, designers, and creators. Upload your work, discover
-            inspiration, and connect with fellow talent.
+            Join a community of artists, designers, and creators. Upload your work, discover inspiration, and connect with fellow talent.
         </p>
     </header>
 
